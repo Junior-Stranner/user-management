@@ -1,6 +1,6 @@
 package br.com.judev.usermanagement.entity;
 
-import br.com.judev.usermanagement.dto.UserDto;
+import br.com.judev.usermanagement.web.dto.UserDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

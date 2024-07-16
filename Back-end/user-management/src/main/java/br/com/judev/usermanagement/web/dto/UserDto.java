@@ -1,4 +1,4 @@
-package br.com.judev.usermanagement.dto;
+package br.com.judev.usermanagement.web.dto;
 
 import br.com.judev.usermanagement.entity.User;
 import jakarta.validation.constraints.Email;
