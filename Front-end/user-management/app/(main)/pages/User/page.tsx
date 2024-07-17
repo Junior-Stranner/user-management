@@ -16,9 +16,10 @@ import { classNames } from 'primereact/utils';
 import React, { useEffect, useRef, useState } from 'react';
 import { ProductService } from '../../../../demo/service/ProductService';
 import { Projeto } from '@/types';
+import { UserService } from '../../../../service/UserService';
 
 /* @todo Used 'as any' for types here. Will fix in next version due to onSelectionChange event type issue. */
-const Crud = () => {
+const User = () => {
     let emptyUser: Projeto.User = {
         id: 0,
         name: '',
@@ -37,10 +38,17 @@ const Crud = () => {
     const [globalFilter, setGlobalFilter] = useState('');
     const toast = useRef<Toast>(null);
     const dt = useRef<DataTable<any>>(null);
+    const userService = new UserService();
 
     useEffect(() => {
     //    ProductService.getProducts().then((data) => setUsers(data as any));
-    }, []);
+    userService.listarTodos().then((response) => {
+        console.log(response.data);
+        setUsers(response.data);
+    }).catch((error) => {
+        console.log(error);
+    })
+}, [UserService, users]);
 
 
     const openNew = () => {
@@ -65,71 +73,80 @@ const Crud = () => {
    const saveUser = () => {
         setSubmitted(true);
 
-      /*   if (user.name.trim()) {
-            let users = [...(users as any)];
-            let _product = { ...product };
-            if (product.id) {
-                const index = findIndexById(product.id);
-
-                _products[index] = _product;
-                toast.current?.show({
-                    severity: 'success',
-                    summary: 'Successful',
-                    detail: 'Product Updated',
-                    life: 3000
+        if (!user.id) {''
+            userService.inserir(user)
+                .then((response) => {
+                    setUserDialog(false);
+                    setUser(emptyUser);
+                    setUsers(null);
+                    toast.current?.show({
+                        severity: 'info',
+                        summary: 'Sucesso!',
+                        detail: 'Usuário cadastrado com sucesso!'
+                    });
+                }).catch((error) => {
+                    console.log(error.data.message);
+                    toast.current?.show({
+                        severity: 'error',
+                        summary: 'Erro!',
+                        detail: 'Erro ao salvar!' + error.data.message
+                    })
                 });
-            } else {
-                _product.id = createId();
-                _product.image = 'product-placeholder.svg';
-                _products.push(_product);
-                toast.current?.show({
-                    severity: 'success',
-                    summary: 'Successful',
-                    detail: 'Product Created',
-                    life: 3000
-                });
-            }
-
-            setProducts(_products as any);
-            setProductDialog(false);
-            setProduct(emptyProduct);
-        }*/
+        } else {
+            userService.alterar(user)
+                .then((response) => {
+                    setUserDialog(false);
+                    setUser(emptyUser);
+                    setUsers(null);
+                    toast.current?.show({
+                        severity: 'info',
+                        summary: 'Sucesso!',
+                        detail: 'Usuário alterado com sucesso!'
+                    });
+                }).catch((error) => {
+                    console.log(error.data.message);
+                    toast.current?.show({
+                        severity: 'error',
+                        summary: 'Erro!',
+                        detail: 'Erro ao alterar!' + error.data.message
+                    })
+                })
+        }
     };
 
-    const editUser = (product: Projeto.User) => {
+    const editUser = (user: Projeto.User) => {
         setUser({ ...user });
         setUserDialog(true);
     };
 
-    const confirmDeleteUser = (product: Projeto.User) => {
+    const confirmDeleteUser = (usuario: Projeto.User) => {
         setUser(user);
         setDeleteUserDialog(true);
     };
 
-    const deleteUser = () => {
-        let _products = (users as any)?.filter((val: any) => val.id !== user.id);
-        setUsers(_products);
-        setDeleteUserDialog(false);
-        setUser(emptyUser);
-        toast.current?.show({
-            severity: 'success',
-            summary: 'Successful',
-            detail: 'Product Deleted',
-            life: 3000
-        });
+    const deleteUsuario = () => {
+        if (user.id) {
+            userService.excluir(user.id).then((response) => {
+                setUser(emptyUser);
+                setDeleteUserDialog(false);
+                setUsers(null);
+                toast.current?.show({
+                    severity: 'success',
+                    summary: 'Sucesso!',
+                    detail: 'Usuário Deletado com Sucesso!',
+                    life: 3000
+                });
+            }).catch((error) => {
+                toast.current?.show({
+                    severity: 'error',
+                    summary: 'Erro!',
+                    detail: 'Erro ao deletar o usuário!',
+                    life: 3000
+                });
+            });
+        }
     };
 
-   /* const findIndexById = (id: string) => {
-        let index = -1;
-        for (let i = 0; i < (users as any)?.length; i++) {
-            if ((users as any)[i].id === id) {
-                index = i;
-                break;
-            }
-        }
-
-        return index;
-    };*/
 
     const exportCSV = () => {
         dt.current?.exportCSV();
@@ -140,23 +157,30 @@ const Crud = () => {
     };
 
     const deleteSelectedUsers = () => {
-    /*    let _users = (users as any)?.filter((val: any) => !(selectedUsers as any)?.includes(val));
-        setUsers(_users);
-        setDeleteUsersDialog(false);
-        setSelectedUsers(null);
-        toast.current?.show({
-            severity: 'success',
-            summary: 'Successful',
-            detail: 'Products Deleted',
-            life: 3000
-        });*/
-    };
 
-   /* const onCategoryChange = (e: RadioButtonChangeEvent) => {
-        let _user = { ...user };
-        _user['category'] = e.value;
-        setUser(_user);
-    };*/
+        Promise.all(selectedUsers.map(async (_user) => {
+            if (_user.id) {
+                await userService.excluir(_user.id);
+            }
+        })).then((response) => {
+            setUsers(null);
+            setSelectedUsers([]);
+            setDeleteUsersDialog(false);
+            toast.current?.show({
+                severity: 'success',
+                summary: 'Sucesso!',
+                detail: 'Usuários Deletados com Sucesso!',
+                life: 3000
+            });
+        }).catch((error) => {
+            toast.current?.show({
+                severity: 'error',
+                summary: 'Erro!',
+                detail: 'Erro ao deletar usuários!',
+                life: 3000
+            })
+        });
+    };
 
     const onInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, name: string) => {
         const val = (e.target && e.target.value) || '';
@@ -164,6 +188,10 @@ const Crud = () => {
         _user[`${name}`] = val;
 
         setUser(_user);
+        // setUser(prevUser => ({
+        //     ...prevUser,
+        //     [name]: val,
+        //   }));
     };
 
     /*   const onInputNumberChange = (e: InputNumberValueChangeEvent, name: string) => {
@@ -303,7 +331,7 @@ const Crud = () => {
     const deleteUserDialogFooter = (
         <>
             <Button label="No" icon="pi pi-times" text onClick={hideDeleteUserDialog} />
-            <Button label="Yes" icon="pi pi-check" text onClick={deleteUser} />
+            <Button label="Yes" icon="pi pi-check" text onClick={deleteSelectedUsers} />
         </>
     );
     const deleteUsersDialogFooter = (
@@ -432,4 +460,6 @@ const Crud = () => {
     );
 };
 
-export default Crud;
+export default User;
+
+
