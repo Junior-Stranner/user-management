@@ -5,16 +5,11 @@ import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
 import { Dialog } from 'primereact/dialog';
 import { FileUpload } from 'primereact/fileupload';
-import { InputNumber, InputNumberValueChangeEvent } from 'primereact/inputnumber';
 import { InputText } from 'primereact/inputtext';
-import { InputTextarea } from 'primereact/inputtextarea';
-import { RadioButton, RadioButtonChangeEvent } from 'primereact/radiobutton';
-import { Rating } from 'primereact/rating';
 import { Toast } from 'primereact/toast';
 import { Toolbar } from 'primereact/toolbar';
 import { classNames } from 'primereact/utils';
-import React, { useEffect, useRef, useState } from 'react';
-import { ProductService } from '../../../../demo/service/ProductService';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Projeto } from '@/types';
 import { UserService } from '../../../../service/UserService';
 
@@ -28,23 +23,25 @@ const User = () => {
         email: ''
     };
 
-    const [users, setUsers] = useState(null);
+    const [users, setUsers] = useState<Projeto.User[]>();
     const [userDialog, setUserDialog] = useState(false);
     const [deleteUserDialog, setDeleteUserDialog] = useState(false);
     const [deleteUsersDialog, setDeleteUsersDialog] = useState(false);
     const [user, setUser] = useState<Projeto.User>(emptyUser);
-    const [selectedUsers, setSelectedUsers] = useState(null);
+    const [selectedUsers, setSelectedUsers] = useState<Projeto.User[]>();
     const [submitted, setSubmitted] = useState(false);
     const [globalFilter, setGlobalFilter] = useState('');
     const toast = useRef<Toast>(null);
     const dt = useRef<DataTable<any>>(null);
-    const userService = new UserService();
+    const userService = useMemo(() => new UserService(), []);
 
     useEffect(() => {
     //    ProductService.getProducts().then((data) => setUsers(data as any));
+    if(!users)
     userService.listarTodos().then((response) => {
         console.log(response.data);
         setUsers(response.data);
+        setUsers([]);
     }).catch((error) => {
         console.log(error);
     })
@@ -73,12 +70,12 @@ const User = () => {
    const saveUser = () => {
         setSubmitted(true);
 
-        if (!user.id) {''
+        if (!user.id) {
             userService.inserir(user)
                 .then((response) => {
                     setUserDialog(false);
                     setUser(emptyUser);
-                    setUsers(null);
+                    setUsers([]);
                     toast.current?.show({
                         severity: 'info',
                         summary: 'Sucesso!',
@@ -89,7 +86,7 @@ const User = () => {
                     toast.current?.show({
                         severity: 'error',
                         summary: 'Erro!',
-                        detail: 'Erro ao salvar!' + error.data.message
+                         detail: 'Erro ao salvar!'
                     })
                 });
         } else {
@@ -97,7 +94,7 @@ const User = () => {
                 .then((response) => {
                     setUserDialog(false);
                     setUser(emptyUser);
-                    setUsers(null);
+                    setUsers([]);
                     toast.current?.show({
                         severity: 'info',
                         summary: 'Sucesso!',
@@ -108,7 +105,7 @@ const User = () => {
                     toast.current?.show({
                         severity: 'error',
                         summary: 'Erro!',
-                        detail: 'Erro ao alterar!' + error.data.message
+                        detail: 'Erro ao alterar!'
                     })
                 })
         }
@@ -118,18 +115,18 @@ const User = () => {
         setUser({ ...user });
         setUserDialog(true);
     };
-
+    
     const confirmDeleteUser = (usuario: Projeto.User) => {
-        setUser(user);
+        setUser(usuario);
         setDeleteUserDialog(true);
     };
-
-    const deleteUsuario = () => {
+    
+    const deleteUser = () => {
         if (user.id) {
             userService.excluir(user.id).then((response) => {
                 setUser(emptyUser);
                 setDeleteUserDialog(false);
-                setUsers(null);
+                setUsers([]);
                 toast.current?.show({
                     severity: 'success',
                     summary: 'Sucesso!',
@@ -146,24 +143,24 @@ const User = () => {
             });
         }
     };
-
-
+    
+    
     const exportCSV = () => {
         dt.current?.exportCSV();
     };
-
+    
     const confirmDeleteSelected = () => {
         setDeleteUsersDialog(true);
     };
-
+    
     const deleteSelectedUsers = () => {
-
+    
         Promise.all(selectedUsers.map(async (_user) => {
             if (_user.id) {
                 await userService.excluir(_user.id);
             }
         })).then((response) => {
-            setUsers(null);
+            setUsers([]);
             setSelectedUsers([]);
             setDeleteUsersDialog(false);
             toast.current?.show({
@@ -181,38 +178,27 @@ const User = () => {
             })
         });
     };
-
+    
     const onInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, name: string) => {
         const val = (e.target && e.target.value) || '';
         let _user = { ...user };
         _user[`${name}`] = val;
-
+    
         setUser(_user);
-        // setUser(prevUser => ({
-        //     ...prevUser,
-        //     [name]: val,
-        //   }));
     };
-
-    /*   const onInputNumberChange = (e: InputNumberValueChangeEvent, name: string) => {
-        const val = e.value || 0;
-        let _product = { ...product };
-        _product[`${name}`] = val;
-
-        setProduct(_product);
-    };*/
+    
 
     const leftToolbarTemplate = () => {
         return (
             <React.Fragment>
                 <div className="my-2">
-                    <Button label="New" icon="pi pi-plus" severity="success" className=" mr-2" onClick={openNew} />
+                    <Button label="New" icon="pi pi-plus" severity="success" className="mr-2" onClick={openNew} />
                     <Button label="Delete" icon="pi pi-trash" severity="danger" onClick={confirmDeleteSelected} disabled={!selectedUsers || !(selectedUsers as any).length} />
                 </div>
             </React.Fragment>
         );
     };
-
+    
     const rightToolbarTemplate = () => {
         return (
             <React.Fragment>
@@ -221,7 +207,7 @@ const User = () => {
             </React.Fragment>
         );
     };
-
+    
     const idBodyTemplate = (rowData: Projeto.User) => {
         return (
             <>
@@ -230,7 +216,7 @@ const User = () => {
             </>
         );
     };
-
+    
     const nameBodyTemplate = (rowData: Projeto.User) => {
         return (
             <>
@@ -239,7 +225,7 @@ const User = () => {
             </>
         );
     };
-
+    
     const loginBodyTemplate = (rowData: Projeto.User) => {
         return (
             <>
@@ -248,7 +234,7 @@ const User = () => {
             </>
         );
     };
-
+    
     const emailBodyTemplate = (rowData: Projeto.User) => {
         return (
             <>
@@ -257,52 +243,8 @@ const User = () => {
             </>
         );
     };
-
-  /*  const imageBodyTemplate = (rowData: Demo.Product) => {
-        return (
-            <>
-                <span className="p-column-title">Image</span>
-                <img src={`/demo/images/product/${rowData.image}`} alt={rowData.image} className="shadow-2" width="100" />
-            </>
-        );
-    };
-
-    const priceBodyTemplate = (rowData: Demo.Product) => {
-        return (
-            <>
-                <span className="p-column-title">Price</span>
-                {formatCurrency(rowData.price as number)}
-            </>
-        );
-    };
-
-    const categoryBodyTemplate = (rowData: Demo.Product) => {
-        return (
-            <>
-                <span className="p-column-title">Category</span>
-                {rowData.category}
-            </>
-        );
-    };
-
-    const ratingBodyTemplate = (rowData: Demo.Product) => {
-        return (
-            <>
-                <span className="p-column-title">Reviews</span>
-                <Rating value={rowData.rating} readOnly cancel={false} />
-            </>
-        );
-    };
-
-    const statusBodyTemplate = (rowData: Demo.Product) => {
-        return (
-            <>
-                <span className="p-column-title">Status</span>
-                <span className={`product-badge status-${rowData.inventoryStatus?.toLowerCase()}`}>{rowData.inventoryStatus}</span>
-            </>
-        );
-    };*/
-
+    
+    
     const actionBodyTemplate = (rowData: Projeto.User) => {
         return (
             <>
@@ -311,7 +253,7 @@ const User = () => {
             </>
         );
     };
-
+    
     const header = (
         <div className="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
             <h5 className="m-0">Users Management</h5>
@@ -321,7 +263,7 @@ const User = () => {
             </span>
         </div>
     );
-
+    
     const userDialogFooter = (
         <>
             <Button label="Cancel" icon="pi pi-times" text onClick={hideDialog} />
@@ -331,7 +273,7 @@ const User = () => {
     const deleteUserDialogFooter = (
         <>
             <Button label="No" icon="pi pi-times" text onClick={hideDeleteUserDialog} />
-            <Button label="Yes" icon="pi pi-check" text onClick={deleteSelectedUsers} />
+            <Button label="Yes" icon="pi pi-check" text onClick={deleteUser} />
         </>
     );
     const deleteUsersDialogFooter = (
@@ -340,14 +282,14 @@ const User = () => {
             <Button label="Yes" icon="pi pi-check" text onClick={deleteSelectedUsers} />
         </>
     );
-
+    
     return (
         <div className="grid crud-demo">
             <div className="col-12">
                 <div className="card">
                     <Toast ref={toast} />
                     <Toolbar className="mb-4" left={leftToolbarTemplate} right={rightToolbarTemplate}></Toolbar>
-
+    
                     <DataTable
                         ref={dt}
                         value={users}
@@ -373,7 +315,7 @@ const User = () => {
                     
                         <Column body={actionBodyTemplate} headerStyle={{ minWidth: '10rem' }}></Column>
                     </DataTable>
-
+    
                     <Dialog visible={userDialog} style={{ width: '450px' }} header="Product Details" modal className="p-fluid" footer={userDialogFooter} onHide={hideDialog}>
                         <div className="field">
                             <label htmlFor="name">Name</label>
@@ -389,13 +331,13 @@ const User = () => {
                             />
                             {submitted && !user.name && <small className="p-invalid">Name is required.</small>}
                         </div>
-
+    
                         <div className="field">
                             <label htmlFor="login">Login</label>
                             <InputText
-                                id="nalloginoginme"
-                                value={user.name}
-                                onChange={(e) => onInputChange(e, 'lgin')}
+                                id="login"
+                                value={user.login}
+                                onChange={(e) => onInputChange(e, 'login')}
                                 required
                                 autoFocus
                                 className={classNames({
@@ -404,7 +346,7 @@ const User = () => {
                             />
                             {submitted && !user.login && <small className="p-invalid">login is required.</small>}
                         </div>
-
+    
                         <div className="field">
                             <label htmlFor="password">Password</label>
                             <InputText
@@ -419,7 +361,7 @@ const User = () => {
                             />
                             {submitted && !user.password && <small className="p-invalid">Password is required.</small>}
                         </div>
-
+    
                         <div className="field">
                             <label htmlFor="email">Email</label>
                             <InputText
@@ -436,7 +378,7 @@ const User = () => {
                         </div>
                         
                     </Dialog>
-
+    
                     <Dialog visible={deleteUserDialog} style={{ width: '450px' }} header="Confirm" modal footer={deleteUserDialogFooter} onHide={hideDeleteUserDialog}>
                         <div className="flex align-items-center justify-content-center">
                             <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem' }} />
@@ -447,7 +389,7 @@ const User = () => {
                             )}
                         </div>
                     </Dialog>
-
+    
                     <Dialog visible={deleteUsersDialog} style={{ width: '450px' }} header="Confirm" modal footer={deleteUsersDialogFooter} onHide={hideDeleteUsersDialog}>
                         <div className="flex align-items-center justify-content-center">
                             <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem' }} />
