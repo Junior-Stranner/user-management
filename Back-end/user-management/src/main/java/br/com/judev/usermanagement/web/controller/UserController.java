@@ -1,5 +1,8 @@
 package br.com.judev.usermanagement.web.controller;
 
+import br.com.judev.usermanagement.exception.EntityAlreadyExists;
+import br.com.judev.usermanagement.exception.EntityNotFoundException;
+import br.com.judev.usermanagement.exception.NameNotChangeException;
 import br.com.judev.usermanagement.service.UserService;
 import br.com.judev.usermanagement.web.dto.request.UserRequestDto;
 import br.com.judev.usermanagement.web.dto.response.UserResponseDto;
@@ -50,6 +53,7 @@ public class UserController {
                     @ApiResponse(description = "Internal Error", responseCode = "500", content = @Content),
             }
     )
+    @ExceptionHandler(EntityNotFoundException.class)
     @GetMapping("/{userId}")
     public UserResponseDto getUserById(@PathVariable Long userId) {
         return userService.getUserById(userId);
@@ -64,6 +68,7 @@ public class UserController {
                     @ApiResponse(responseCode = "422", description = "Resource not processed due to invalid input data",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
             })
+    @ExceptionHandler(EntityAlreadyExists.class)
     @PostMapping("/create")
     public UserResponseDto createUser(@RequestBody UserRequestDto userDto) {
         return userService.create(userDto);
@@ -82,6 +87,8 @@ public class UserController {
                     @ApiResponse(responseCode = "422", description = "Invalid or poorly formatted fields",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
             })
+
+    @ExceptionHandler(NameNotChangeException.class)
     @PutMapping("/{userId}")
     public UserResponseDto updateUser(@PathVariable Long userId, @RequestBody UserRequestDto userDto) {
         return userService.update(userId, userDto);
@@ -96,6 +103,7 @@ public class UserController {
                     @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
                     @ApiResponse(description = "Internal Error", responseCode = "500", content = @Content),
             })
+    @ExceptionHandler(EntityNotFoundException.class)
     @DeleteMapping("/{userId}")
     public void deleteUser(@PathVariable Long userId) {
         userService.delete(userId);

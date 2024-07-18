@@ -39,6 +39,13 @@ public class UserServiceImpl implements UserService {
             throw new EntityAlreadyExists("User with email " + userDto.getEmail() + " already exists.");
         }
         User newUser = new User();
+
+        /*have to set all atributes to dto with this
+         method because always became null atribute*/
+        newUser.setName(userDto.getName());
+        newUser.setLogin(userDto.getLogin());
+        newUser.setPassword(userDto.getPassword());
+        newUser.setEmail(userDto.getEmail());
         User savedUser = userRepository.save(newUser);
         return UserMapper.ToDto(savedUser);
     }

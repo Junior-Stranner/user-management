@@ -1,12 +1,10 @@
 package br.com.judev.usermanagement.web.dto.response;
 
-import jakarta.persistence.Column;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Data;
 
 @Data
+@JsonPropertyOrder({"userId", "name", "login", "password", "email"})
 public class UserResponseDto {
 
     private Long userId;

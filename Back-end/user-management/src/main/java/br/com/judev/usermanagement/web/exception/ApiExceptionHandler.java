@@ -4,6 +4,7 @@ import br.com.judev.usermanagement.exception.EmailUniqueViolationException;
 import br.com.judev.usermanagement.exception.EntityAlreadyExists;
 import br.com.judev.usermanagement.exception.EntityNotFoundException;
 
+import br.com.judev.usermanagement.exception.NameNotChangeException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -13,6 +14,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import javax.naming.NameAlreadyBoundException;
 
 @Slf4j
 @RestControllerAdvice
@@ -41,6 +44,15 @@ public class ApiExceptionHandler {
         log.error("Api Error - ", ex);
         return ResponseEntity
                 .status(HttpStatus.MULTI_STATUS)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new ErrorMessage(request, HttpStatus.CONFLICT, ex.getMessage()));
+    }
+
+    @ExceptionHandler({NameNotChangeException.class})
+    public ResponseEntity<ErrorMessage> nameNotChangeException(RuntimeException ex, HttpServletRequest request) {
+        log.error("Api Error - ", ex);
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT )
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(new ErrorMessage(request, HttpStatus.CONFLICT, ex.getMessage()));
     }
