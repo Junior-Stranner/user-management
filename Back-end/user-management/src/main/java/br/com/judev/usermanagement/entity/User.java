@@ -1,7 +1,10 @@
 package br.com.judev.usermanagement.entity;
 
-import br.com.judev.usermanagement.web.dto.UserDto;
+import br.com.judev.usermanagement.web.dto.request.UserRequestDto;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,24 +22,15 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(nullable = false, length = 10)
     private String name;
-
-    @Column(nullable = false, unique = true)
     private String login;
-
-    @Column(nullable = false , length = 100)
     private String password;
-
-    @Column(nullable = false)
     private String email;
 
     @Override
     public int hashCode() {
         return Objects.hash(id);
     }
-
 
     @Override
     public boolean equals(Object obj) {
@@ -49,10 +43,4 @@ public class User {
         User other = (User) obj;
         return Objects.equals(id, other.id);
     }
-
-    public User(UserDto dto){
-        BeanUtils.copyProperties(dto, this);
-    }
-
-
 }
