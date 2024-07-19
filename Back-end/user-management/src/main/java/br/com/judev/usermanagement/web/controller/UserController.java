@@ -42,23 +42,6 @@ public class UserController {
         return userService.listAll();
     }
 
-    @Operation(summary = "Find a User ", description = "Find a User",
-            responses = {
-                    @ApiResponse(description = "Success", responseCode = "200",
-                            content = @Content(schema = @Schema(implementation = UserRequestDto.class))),
-                    @ApiResponse(description = "No Content", responseCode = "204", content = @Content),
-                    @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
-                    @ApiResponse(description = "Unauthorized", responseCode = "401", content = @Content),
-                    @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
-                    @ApiResponse(description = "Internal Error", responseCode = "500", content = @Content),
-            }
-    )
-    @ExceptionHandler(EntityNotFoundException.class)
-    @GetMapping("/{userId}")
-    public UserResponseDto getUserById(@PathVariable Long userId) {
-        return userService.getUserById(userId);
-    }
-
     @Operation(summary = "Create a new user", description ="Feature to create a new user",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Recurso criado com sucesso",
@@ -107,5 +90,22 @@ public class UserController {
     @DeleteMapping("/{userId}")
     public void deleteUser(@PathVariable Long userId) {
         userService.delete(userId);
+    }
+
+    @Operation(summary = "Find a User ", description = "Find a User",
+            responses = {
+                    @ApiResponse(description = "Success", responseCode = "200",
+                            content = @Content(schema = @Schema(implementation = UserRequestDto.class))),
+                    @ApiResponse(description = "No Content", responseCode = "204", content = @Content),
+                    @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
+                    @ApiResponse(description = "Unauthorized", responseCode = "401", content = @Content),
+                    @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
+                    @ApiResponse(description = "Internal Error", responseCode = "500", content = @Content),
+            }
+    )
+    @ExceptionHandler(EntityNotFoundException.class)
+    @GetMapping("/{userId}")
+    public UserResponseDto getUserById(@PathVariable Long userId) {
+        return userService.getUserById(userId);
     }
 }

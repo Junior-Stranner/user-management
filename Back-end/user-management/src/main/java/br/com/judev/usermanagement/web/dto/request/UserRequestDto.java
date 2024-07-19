@@ -14,14 +14,12 @@ import org.springframework.beans.BeanUtils;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-
 public class UserRequestDto {
 
     @NotBlank
     @Size(min = 5, max =100)
     private String name;
     @NotBlank
-    @Column(nullable = false, unique = true)
     private String login;
     @NotBlank
     @Size(min = 6, max =10)

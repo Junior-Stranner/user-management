@@ -2,6 +2,7 @@ package br.com.judev.usermanagement.entity;
 
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,11 +20,12 @@ public class Profile {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-
-    @Column(nullable = false)
+    @Column(nullable = false , unique = true)
     private String descricao;
 
     public Profile(Profile profileDto) {
         BeanUtils.copyProperties(profileDto, this);
     }
+
+
 }

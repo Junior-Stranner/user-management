@@ -27,8 +27,8 @@ public class ProfileUser {
     private Profile profile;
 
 
-    // Construtor que aceita um ProfileUserDto
-    public ProfileUser(ProfileUserDto dto) {
+  /*  // Construtor que aceita um ProfileUserDto
+    public ProfileUserService(ProfileUserDto dto) {
         if (dto != null) {
             this.id = dto.getId(); // Copiar o ID se necessário
             if (dto.getUser() != null) {
@@ -37,6 +37,5 @@ public class ProfileUser {
             if (dto.getProfile() != null) {
                 this.profile = new Profile(dto.profile()); // Assumindo que Profile tem um construtor que aceita ProfileDto
             }
-        }
+        }*/
     }
-}

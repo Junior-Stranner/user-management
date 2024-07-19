@@ -37,23 +37,6 @@ public class ProfileController {
         return profileService.getProfile();
     }
 
-    @Operation(summary = "Find a Profile ", description = "Find a Profile",
-            responses = {
-                    @ApiResponse(description = "Success", responseCode = "200",
-                            content = @Content(schema = @Schema(implementation = ProfileDto.class))),
-                    @ApiResponse(description = "No Content", responseCode = "204", content = @Content),
-                    @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
-                    @ApiResponse(description = "Unauthorized", responseCode = "401", content = @Content),
-                    @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
-                    @ApiResponse(description = "Internal Error", responseCode = "500", content = @Content),
-            }
-    )
-    @GetMapping("/{profileId}")
-    public ProfileDto getProfileById(@PathVariable Long profileId) {
-        return profileService.getProfileById(profileId);
-    }
-
-
     @Operation(summary = "Create a new Profile", description ="Feature to create a new Profile",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Recurso criado com sucesso",
@@ -100,6 +83,22 @@ public class ProfileController {
     @DeleteMapping("/{profileId}")
     public void deleteProfile(@PathVariable Long profileId) {
         profileService.delete(profileId);
+    }
+
+    @Operation(summary = "Find a Profile ", description = "Find a Profile",
+            responses = {
+                    @ApiResponse(description = "Success", responseCode = "200",
+                            content = @Content(schema = @Schema(implementation = ProfileDto.class))),
+                    @ApiResponse(description = "No Content", responseCode = "204", content = @Content),
+                    @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
+                    @ApiResponse(description = "Unauthorized", responseCode = "401", content = @Content),
+                    @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
+                    @ApiResponse(description = "Internal Error", responseCode = "500", content = @Content),
+            }
+    )
+    @GetMapping("/{profileId}")
+    public ProfileDto getProfileById(@PathVariable Long profileId) {
+        return profileService.getProfileById(profileId);
     }
 
 }

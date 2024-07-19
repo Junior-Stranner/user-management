@@ -1,39 +1,30 @@
 package br.com.judev.usermanagement.entity;
 
-import br.com.judev.usermanagement.web.dto.request.UserRequestDto;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.beans.BeanUtils;
 
 import java.util.Objects;
 
 @Entity
-@Table(name ="tb_user")
+@Table(name = "tb_resource")
 @Getter@Setter
-@AllArgsConstructor@NoArgsConstructor
-public class User {
+@NoArgsConstructor
+@AllArgsConstructor
+public class Resource {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(nullable = false, length = 200)
+    @Column(nullable = false)
     private String name;
+    @Column(nullable = false , unique = true)
+    private String key;
 
-    @Column(nullable = false, length = 100, unique = true)
-    private String login;
-
-    @Column(nullable = false, length = 100)
-    private String password;
-
-    @Column(nullable = false, length = 150, unique = true)
-    private String email;
 
     @Override
     public int hashCode() {
@@ -48,7 +39,9 @@ public class User {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        User other = (User) obj;
+        Resource other = (Resource) obj;
         return Objects.equals(id, other.id);
     }
+
+
 }

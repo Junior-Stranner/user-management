@@ -8,7 +8,7 @@ import br.com.judev.usermanagement.service.UserService;
 import br.com.judev.usermanagement.web.dto.request.UserRequestDto;
 import br.com.judev.usermanagement.web.dto.response.UserResponseDto;
 import br.com.judev.usermanagement.web.mapper.UserMapper;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
@@ -51,13 +51,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponseDto getUserById(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(
-                () -> new EntityNotFoundException("User not found with id: " + userId));
-        return UserMapper.ToDto(user);
-    }
-
-    @Override
     public UserResponseDto update(Long userId, UserRequestDto userDto) {
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isPresent()) {
@@ -87,5 +80,12 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new EntityNotFoundException("User not found with id: " + userId));
         userRepository.delete(user);
+    }
+
+    @Override
+    public UserResponseDto getUserById(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new EntityNotFoundException("User not found with id: " + userId));
+        return UserMapper.ToDto(user);
     }
 }
