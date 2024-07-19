@@ -1,13 +1,19 @@
 package br.com.judev.usermanagement.service.serviceImpl;
 
+import br.com.judev.usermanagement.entity.Resource;
+import br.com.judev.usermanagement.exception.ResourceNotFoundException;
 import br.com.judev.usermanagement.repository.ResourceRepository;
 import br.com.judev.usermanagement.service.ResourceService;
 import br.com.judev.usermanagement.web.dto.request.ResourceRequestDto;
 import br.com.judev.usermanagement.web.dto.response.ResourceResponseDto;
+import br.com.judev.usermanagement.web.mapper.ResourceMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Service
 @RequiredArgsConstructor
@@ -16,27 +22,51 @@ public class ResourceServiceImpl implements ResourceService {
     private final ResourceRepository resourceRepository;
 
     @Override
-    public ResourceResponseDto create(ResourceRequestDto resourceRequestDto) {
-        return null;
+    public List<ResourceResponseDto> listAll() {
+        List<Resource> rescources = StreamSupport
+                .stream(resourceRepository.findAll().spliterator(), false)
+                .collect(Collectors.toList());
+        return ResourceMapper.toListDto(rescources);
     }
 
     @Override
-    public List<ResourceResponseDto> listAll() {
-        return List.of();
+    public ResourceResponseDto create(ResourceRequestDto resourceRequestDto) {
+        Resource newResource = new Resource();
+        Resource savedResource = resourceRepository.save(newResource);
+        return ResourceMapper.toDto(savedResource) ;
     }
+
 
     @Override
     public ResourceResponseDto update(Long resourceId, ResourceRequestDto resourceRequestDto) {
-        return null;
+         Optional<Resource> optionalResource = resourceRepository.findById(resourceId);
+         if(optionalResource.isPresent()){
+             Resource resource = optionalResource.get();
+
+             if(!resource.getName().equals(resourceRequestDto.getName())){
+               resource.setName(resource.getName());
+
+               Resource updatedResource = resourceRepository.save(resource);
+               return ResourceMapper.toDto(updatedResource);
+             }else{
+                 throw new IllegalArgumentException("Name must be changed to update.");
+             }
+         }else{
+             throw new ResourceNotFoundException("Resource not found with id: " + resourceId);
+         }
     }
 
     @Override
-    public void delete(Long userId) {
-
+    public void delete(Long resourceId) {
+        Resource resource = resourceRepository.findById(resourceId).orElseThrow(
+                () -> new ResourceNotFoundException("resource not found with id: " + resourceId));
+        resourceRepository.delete(resource);
     }
 
     @Override
     public ResourceResponseDto getUserById(Long resourceId) {
-        return null;
+        Resource resource = resourceRepository.findById(resourceId).orElseThrow(
+                () -> new ResourceNotFoundException("resource not found with id: " + resourceId));
+        return ResourceMapper.toDto(resource);
     }
 }

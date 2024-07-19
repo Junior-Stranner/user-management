@@ -5,6 +5,6 @@ import lombok.Data;
 @Data
 public class ResourceResponseDto {
     private Long id;
-    private String nome;
-    private String chave;
+    private String name;
+    private String key;
 }

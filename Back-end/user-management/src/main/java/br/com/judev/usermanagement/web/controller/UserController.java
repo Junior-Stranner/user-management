@@ -57,10 +57,10 @@ public class UserController {
         return userService.create(userDto);
     }
 
-    @Operation(summary = "Create a new user", description ="Feature to update a user",
+    @Operation(summary = "update a new user", description ="Feature to update a user",
             responses = {
                     @ApiResponse(responseCode = "204", description = "User updadet Sucessfully",
-                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = Void.class))),
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserRequestDto.class))),
                     @ApiResponse(responseCode = "400", description = " Password does not match",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
                     @ApiResponse(responseCode = "401", description = "User does not have a Authorization",
@@ -70,7 +70,6 @@ public class UserController {
                     @ApiResponse(responseCode = "422", description = "Invalid or poorly formatted fields",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
             })
-
     @ExceptionHandler(NameNotChangeException.class)
     @PutMapping("/{userId}")
     public UserResponseDto updateUser(@PathVariable Long userId, @RequestBody UserRequestDto userDto) {

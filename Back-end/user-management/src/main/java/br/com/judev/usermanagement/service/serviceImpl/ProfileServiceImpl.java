@@ -2,6 +2,7 @@ package br.com.judev.usermanagement.service.serviceImpl;
 
 import br.com.judev.usermanagement.entity.Profile;
 import br.com.judev.usermanagement.exception.EntityNotFoundException;
+import br.com.judev.usermanagement.exception.ProfileNotFoundException;
 import br.com.judev.usermanagement.repository.ProfileRepository;
 import br.com.judev.usermanagement.service.ProfileService;
 import br.com.judev.usermanagement.web.dto.ProfileDto;
@@ -42,14 +43,14 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public void delete(Long profileId) {
         Profile profile = profileRepository.findById(profileId).orElseThrow(
-                () -> new EntityNotFoundException("Profile not found with id : "+profileId));
+                () -> new ProfileNotFoundException("Profile not found with id : "+profileId));
       profileRepository.delete(profile);
     }
 
     @Override
     public ProfileDto getProfileById(Long profileId) {
         Profile profile = profileRepository.findById(profileId).orElseThrow(
-                () -> new EntityNotFoundException("Profile not found with id : "+profileId));
+                () -> new ProfileNotFoundException("Profile not found with id : "+profileId));
         return new ProfileDto(profile);
     }
 }

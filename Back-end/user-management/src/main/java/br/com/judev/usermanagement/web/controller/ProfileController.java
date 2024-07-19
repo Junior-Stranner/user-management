@@ -28,7 +28,7 @@ public class ProfileController {
             responses = {
                     @ApiResponse(responseCode = "200", description = "List of all registered Profiles",
                             content = @Content(mediaType = "application/json",
-                                    array = @ArraySchema(schema = @Schema(implementation = UserRequestDto.class)))),
+                                    array = @ArraySchema(schema = @Schema(implementation = ProfileDto.class)))),
                     @ApiResponse(responseCode = "401", description = "User without permission to access this resource",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
             })

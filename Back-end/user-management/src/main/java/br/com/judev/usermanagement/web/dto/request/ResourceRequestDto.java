@@ -10,9 +10,9 @@ import java.util.Objects;
 public class ResourceRequestDto {
 
     @NotBlank
-    private String nome;
+    private String name;
     @NotBlank
     @Size(min = 6 , max = 20)
-    private String chave;
+    private String key;
 
 }
