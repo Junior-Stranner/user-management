@@ -39,27 +39,32 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     public ProfileDto update(ProfileDto dto, Long profileId) {
-        Optional<Profile> optionalResource = profileRepository.findById(profileId);
-        if (optionalResource.isPresent()) {
-            Profile profile = optionalResource.get();
+        Optional<Profile> optionalProfile = profileRepository.findById(profileId);
+        if (optionalProfile.isPresent()) {
+            Profile profile = optionalProfile.get();
 
-            validator.validatedescripton(profile, dto);
+            if (dto.getDescricao() != null ) {
+                validator.validatedescripton(profile, dto);
+                profile.setDescricao(dto.getDescricao());
+            }
 
-            profile.setDescricao(dto.getDescricao());
-            Profile updateProfile = profileRepository.save(profile);
+            Profile updatedProfile = profileRepository.save(profile);
 
-            return new ProfileDto(updateProfile);
-        }else{
-            throw new EntityNotFoundException("Profile not found with id : "+profileId);
+            return new ProfileDto(updatedProfile);
+        } else {
+            throw new EntityNotFoundException("Profile not found with id: " + profileId);
         }
     }
 
+
     @Override
     public void delete(Long profileId) {
-        Profile profile = profileRepository.findById(profileId).orElseThrow(
-                () -> new ProfileNotFoundException("Profile not found with id : "+profileId));
-      profileRepository.delete(profile);
+        if (!profileRepository.existsById(profileId)) {
+            throw new ProfileNotFoundException("Profile not found with id: " + profileId);
+        }
+        profileRepository.deleteById(profileId);
     }
+
 
     @Override
     public ProfileDto getProfileById(Long profileId) {

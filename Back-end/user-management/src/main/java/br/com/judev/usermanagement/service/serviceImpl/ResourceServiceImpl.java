@@ -46,11 +46,12 @@ public class ResourceServiceImpl implements ResourceService {
              if(optionalResource.isPresent()){
              Resource resource = optionalResource.get();
 
-             validator.validateName(resource, resourceRequestDto);
-             validator.validateKey(resource,resourceRequestDto);
+                 validator.validateKey(resource, resourceRequestDto);
 
-               resource.setName(resource.getName());
-
+                 if (resourceRequestDto.getName() != null) {
+                     validator.validateName(resource, resourceRequestDto);
+                     resource.setName(resourceRequestDto.getName());
+                 }
                Resource updatedResource = resourceRepository.save(resource);
                return ResourceMapper.toDto(updatedResource);
          }else{
@@ -60,10 +61,12 @@ public class ResourceServiceImpl implements ResourceService {
 
     @Override
     public void delete(Long resourceId) {
-        Resource resource = resourceRepository.findById(resourceId).orElseThrow(
-                () -> new ResourceNotFoundException("resource not found with id: " + resourceId));
-        resourceRepository.delete(resource);
+        if (!resourceRepository.existsById(resourceId)) {
+            throw new ResourceNotFoundException("Resource not found with id: " + resourceId);
+        }
+        resourceRepository.deleteById(resourceId);
     }
+
 
     @Override
     public ResourceResponseDto getUserById(Long resourceId) {

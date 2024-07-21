@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class ResourceResponseDto {
-    private Long id;
+    private Long resourceId;
     private String name;
     private String key;
 }

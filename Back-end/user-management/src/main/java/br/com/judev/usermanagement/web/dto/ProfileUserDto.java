@@ -16,7 +16,7 @@ import org.springframework.beans.BeanUtils;
 public class ProfileUserDto {
 
     private Long id;
-    private UserResponseDto user;
+    private UserRequestDto user;
     private ProfileDto profile;
 
    /* public ProfileUserDto(ProfileUserService entity) {

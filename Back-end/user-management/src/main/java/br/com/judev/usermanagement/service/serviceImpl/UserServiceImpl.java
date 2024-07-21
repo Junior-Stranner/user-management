@@ -59,7 +59,10 @@ public class UserServiceImpl implements UserService {
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
 
-            validator.validateName(user, userDto);
+            if (userDto.getName() != null) {
+                validator.validateName(user, userDto);
+                user.setName(userDto.getName());
+            }
             validator.validateEmail(user, userDto);
             validator.validateLogin(user, userDto);
             validator.validatePassword(user, userDto);
@@ -80,10 +83,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void delete(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(
-                () -> new EntityNotFoundException("User not found with id: " + userId));
-        userRepository.delete(user);
+        if (!userRepository.existsById(userId)) {
+            throw new EntityNotFoundException("User not found with id: " + userId);
+        }
+        userRepository.deleteById(userId);
     }
+
 
     @Override
     public UserResponseDto getUserById(Long userId) {
