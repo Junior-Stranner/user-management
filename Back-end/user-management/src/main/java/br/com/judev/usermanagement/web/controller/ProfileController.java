@@ -19,6 +19,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/profile")
 @ControllerAdvice
+@CrossOrigin
 public class ProfileController {
 
     @Autowired
@@ -68,7 +69,7 @@ public class ProfileController {
     @PutMapping("/{profileId}")
     public ProfileDto updateProfile(@PathVariable Long profileId, @RequestBody ProfileDto profileDto) {
         profileService.getProfileById(profileId);
-        return profileService.update(profileDto);
+        return profileService.update(profileDto, profileId);
     }
 
     @Operation(summary = "Delete Profile",

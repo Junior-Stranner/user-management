@@ -7,6 +7,7 @@ import br.com.judev.usermanagement.service.ResourceService;
 import br.com.judev.usermanagement.web.dto.request.ResourceRequestDto;
 import br.com.judev.usermanagement.web.dto.response.ResourceResponseDto;
 import br.com.judev.usermanagement.web.mapper.ResourceMapper;
+import br.com.judev.usermanagement.web.validators.ResourceValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,8 @@ import java.util.stream.StreamSupport;
 @Service
 @RequiredArgsConstructor
 public class ResourceServiceImpl implements ResourceService {
+
+    private final ResourceValidator validator;
 
     private final ResourceRepository resourceRepository;
 
@@ -40,17 +43,16 @@ public class ResourceServiceImpl implements ResourceService {
     @Override
     public ResourceResponseDto update(Long resourceId, ResourceRequestDto resourceRequestDto) {
          Optional<Resource> optionalResource = resourceRepository.findById(resourceId);
-         if(optionalResource.isPresent()){
+             if(optionalResource.isPresent()){
              Resource resource = optionalResource.get();
 
-             if(!resource.getName().equals(resourceRequestDto.getName())){
+             validator.validateName(resource, resourceRequestDto);
+             validator.validateKey(resource,resourceRequestDto);
+
                resource.setName(resource.getName());
 
                Resource updatedResource = resourceRepository.save(resource);
                return ResourceMapper.toDto(updatedResource);
-             }else{
-                 throw new IllegalArgumentException("Name must be changed to update.");
-             }
          }else{
              throw new ResourceNotFoundException("Resource not found with id: " + resourceId);
          }

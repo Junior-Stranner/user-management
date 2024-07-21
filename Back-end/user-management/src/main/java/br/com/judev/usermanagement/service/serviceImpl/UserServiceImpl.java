@@ -8,6 +8,7 @@ import br.com.judev.usermanagement.service.UserService;
 import br.com.judev.usermanagement.web.dto.request.UserRequestDto;
 import br.com.judev.usermanagement.web.dto.response.UserResponseDto;
 import br.com.judev.usermanagement.web.mapper.UserMapper;
+import br.com.judev.usermanagement.web.validators.UserValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +20,8 @@ import java.util.stream.StreamSupport;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
+
+    private final UserValidator validator;
 
     private final UserRepository userRepository;
 
@@ -56,15 +59,15 @@ public class UserServiceImpl implements UserService {
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
 
-            // Verifica se o nome foi alterado
-            if (!user.getName().equals(userDto.getName())) {
-                user.setName(userDto.getName());
+            validator.validateName(user, userDto);
+            validator.validateEmail(user, userDto);
+            validator.validateLogin(user, userDto);
+            validator.validatePassword(user, userDto);
 
-                User updatedUser = userRepository.save(user);
-                return UserMapper.ToDto(updatedUser);
-            } else {
-                throw new IllegalArgumentException("Name must be changed to update.");
-            }
+            user.setName(userDto.getName());
+
+            User updatedUser = userRepository.save(user);
+            return UserMapper.ToDto(updatedUser);
         } else {
             throw new EntityNotFoundException("User not found with id: " + userId);
         }

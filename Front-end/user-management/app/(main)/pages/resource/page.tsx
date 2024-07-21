@@ -11,71 +11,69 @@ import { Toolbar } from 'primereact/toolbar';
 import { classNames } from 'primereact/utils';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Projeto } from '@/types';
-import { UserService } from '../../../../service/UserService';
+import { ResourceService} from '../../../../service/ResourceService';
 
 /* @todo Used 'as any' for types here. Will fix in next version due to onSelectionChange event type issue. */
-const User = () => {
-    let emptyUser: Projeto.User = {
+const Resource = () => {
+    let emtyResource: Projeto.Resource = {
         id: 0,
         name: '',
-        login: '',
-        password:'',
-        email: ''
+        key: ''
     };
 
-    const [users, setUsers] = useState<Projeto.User[]>();
-    const [userDialog, setUserDialog] = useState(false);
-    const [deleteUserDialog, setDeleteUserDialog] = useState(false);
-    const [deleteUsersDialog, setDeleteUsersDialog] = useState(false);
-    const [user, setUser] = useState<Projeto.User>(emptyUser);
-    const [selectedUsers, setSelectedUsers] = useState<Projeto.User[]>();
+    const [resources, setResources] = useState<Projeto.Resource[]>();
+    const [resourceDialog, setResourceDialog] = useState(false);
+    const [deleteResourceDialog, setDeleteResourceDialog] = useState(false);
+    const [deleteResourcesDialog, setDeleteResourcesDialog] = useState(false);
+    const [resource, setResource] = useState<Projeto.Resource>(emtyResource);
+    const [selectedResources, setSelectedResources] = useState<Projeto.Resource[]>();
     const [submitted, setSubmitted] = useState(false);
     const [globalFilter, setGlobalFilter] = useState('');
     const toast = useRef<Toast>(null);
     const dt = useRef<DataTable<any>>(null);
-    const userService = useMemo(() => new UserService(), []);
+    const resourceService = useMemo(() => new ResourceService(), []);
 
     useEffect(() => {
     //    ProductService.getProducts().then((data) => setUsers(data as any));
-    if(!users)
-    userService.listarTodos().then((response) => {
+    if(!resources)
+        resourceService.listarTodos().then((response) => {
         console.log(response.data);
-        setUsers(response.data);
-        setUsers([]);
-    }).catch((error) => {
+        setResources(response.data);
+        setResources([]);
+    }).catch((setResources) => {
         console.log(error);
     })
-}, [UserService, users]);
+}, [resourceService, resources]);
 
 
     const openNew = () => {
-        setUser(emptyUser);
+        setResource(emtyResource);
         setSubmitted(false);
-        setUserDialog(true);
+        setResourceDialog(true);
     };
 
     const hideDialog = () => {
         setSubmitted(false);
-        setUserDialog(false);
+        setResourceDialog(false);
     };
 
-    const hideDeleteUserDialog = () => {
-        setDeleteUserDialog(false);
+    const hideDeleteResourceDialog = () => {
+        setDeleteResourceDialog(false);
     };
 
-    const hideDeleteUsersDialog = () => {
-        setDeleteUsersDialog(false);
+    const hideDeleteResourcesDialog = () => {
+        setDeleteResourcesDialog(false);
     };
 
-   const saveUser = () => {
+   const saveResource = () => {
         setSubmitted(true);
 
-        if (!user.id) {
-            userService.inserir(user)
+        if (!resource.id) {
+            resourceService.inserir(resource.id)
                 .then((response) => {
-                    setUserDialog(false);
-                    setUser(emptyUser);
-                    setUsers([]);
+                    setResourceDialog(false);
+                    setResource(emtyResource);
+                    setResources([]);
                     toast.current?.show({
                         severity: 'info',
                         summary: 'Sucesso!',
@@ -90,11 +88,11 @@ const User = () => {
                     })
                 });
         } else {
-            userService.alterar(user)
+            resourceService.alterar(resource)
                 .then((response) => {
-                    setUserDialog(false);
-                    setUser(emptyUser);
-                    setUsers([]);
+                    setResourceDialog(false);
+                    setResource(emtyResource);
+                    setResources([]);
                     toast.current?.show({
                         severity: 'info',
                         summary: 'Sucesso!',
@@ -111,22 +109,22 @@ const User = () => {
         }
     };
 
-    const editUser = (user: Projeto.User) => {
-        setUser({ ...user });
-        setUserDialog(true);
+    const editResource= (resource: Projeto.Resource) => {
+        setResource({ ...resource });
+        setResourceDialog(true);
     };
     
-    const confirmDeleteUser = (user: Projeto.User) => {
-        setUser(user);
-        setDeleteUserDialog(true);
+    const confirmDeleteResource = (resource: Projeto.Resource) => {
+        setResource(resource);
+        setDeleteResourceDialog(true);
     };
     
-    const deleteUser = () => {
-        if (user.id) {
-            userService.excluir(user.id).then((response) => {
-                setUser(emptyUser);
-                setDeleteUserDialog(false);
-                setUsers([]);
+    const deleteResource = () => {
+        if (resource.id) {
+            resourceService.excluir(resource.id).then((response) => {
+                setResource(emtyResource);
+                setDeleteResourceDialog(false);
+                setResources([]);
                 toast.current?.show({
                     severity: 'success',
                     summary: 'Sucesso!',
@@ -150,19 +148,19 @@ const User = () => {
     };
     
     const confirmDeleteSelected = () => {
-        setDeleteUsersDialog(true);
+        setDeleteResourcesDialog(true);
     };
     
-    const deleteSelectedUsers = () => {
+    const deleteSelectedResources = () => {
     
-        Promise.all(selectedUsers.map(async (_user) => {
-            if (_user.id) {
-                await userService.excluir(_user.id);
+        Promise.all(selectedResources.map(async (_resource) => {
+            if (_resource.id) {
+                await ResourceService.excluir(_resource.id);
             }
         })).then((response) => {
-            setUsers([]);
-            setSelectedUsers([]);
-            setDeleteUsersDialog(false);
+            setResources([]);
+            setSelectedResources([]);
+            setDeleteResourcesDialog(false);
             toast.current?.show({
                 severity: 'success',
                 summary: 'Sucesso!',
@@ -181,10 +179,10 @@ const User = () => {
     
     const onInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, name: string) => {
         const val = (e.target && e.target.value) || '';
-        let _user = { ...user };
-        _user[`${name}`] = val;
+        let _resource = { ...resource };
+        _resource[`${name}`] = val;
     
-        setUser(_user);
+        setResource(_resource);
     };
     
 
@@ -193,7 +191,7 @@ const User = () => {
             <React.Fragment>
                 <div className="my-2">
                     <Button label="New" icon="pi pi-plus" severity="success" className="mr-2" onClick={openNew} />
-                    <Button label="Delete" icon="pi pi-trash" severity="danger" onClick={confirmDeleteSelected} disabled={!selectedUsers || !(selectedUsers as any).length} />
+                    <Button label="Delete" icon="pi pi-trash" severity="danger" onClick={confirmDeleteSelected} disabled={!selectedResources || !(selectedResources as any).length} />
                 </div>
             </React.Fragment>
         );
@@ -208,7 +206,7 @@ const User = () => {
         );
     };
     
-    const idBodyTemplate = (rowData: Projeto.User) => {
+    const idBodyTemplate = (rowData: Projeto.Resource) => {
         return (
             <>
                 <span className="p-column-title">id</span>
@@ -217,7 +215,7 @@ const User = () => {
         );
     };
     
-    const nameBodyTemplate = (rowData: Projeto.User) => {
+    const nameBodyTemplate = (rowData: Projeto.Resource) => {
         return (
             <>
                 <span className="p-column-title">Name</span>
@@ -226,30 +224,22 @@ const User = () => {
         );
     };
     
-    const loginBodyTemplate = (rowData: Projeto.User) => {
+    const keyBodyTemplate = (rowData: Projeto.Resource) => {
         return (
             <>
-                <span className="p-column-title">login</span>
-                {rowData.login}
+                <span className="p-column-title">key</span>
+                {rowData.key}
             </>
         );
     };
     
-    const emailBodyTemplate = (rowData: Projeto.User) => {
+   
+    
+    const actionBodyTemplate = (rowData: Projeto.Resource) => {
         return (
             <>
-                <span className="p-column-title">e-mail</span>
-                {rowData.email}
-            </>
-        );
-    };
-    
-    
-    const actionBodyTemplate = (rowData: Projeto.User) => {
-        return (
-            <>
-                <Button icon="pi pi-pencil" rounded severity="success" className="mr-2" onClick={() => editUser(rowData)} />
-                <Button icon="pi pi-trash" rounded severity="warning" onClick={() => confirmDeleteUser(rowData)} />
+                <Button icon="pi pi-pencil" rounded severity="success" className="mr-2" onClick={() => editResource(rowData)} />
+                <Button icon="pi pi-trash" rounded severity="warning" onClick={() => confirmDeleteResource(rowData)} />
             </>
         );
     };
@@ -267,19 +257,19 @@ const User = () => {
     const userDialogFooter = (
         <>
             <Button label="Cancel" icon="pi pi-times" text onClick={hideDialog} />
-            <Button label="Save" icon="pi pi-check" text onClick={saveUser} />
+            <Button label="Save" icon="pi pi-check" text onClick={saveResource} />
         </>
     );
-    const deleteUserDialogFooter = (
+    const deleteResourcesDialogFooter = (
         <>
-            <Button label="No" icon="pi pi-times" text onClick={hideDeleteUserDialog} />
-            <Button label="Yes" icon="pi pi-check" text onClick={deleteUser} />
+            <Button label="No" icon="pi pi-times" text onClick={hideDeleteResourceDialog} />
+            <Button label="Yes" icon="pi pi-check" text onClick={deleteResource} />
         </>
     );
-    const deleteUsersDialogFooter = (
+    const deleteResourceDialogFooter = (
         <>
-            <Button label="No" icon="pi pi-times" text onClick={hideDeleteUsersDialog} />
-            <Button label="Yes" icon="pi pi-check" text onClick={deleteSelectedUsers} />
+            <Button label="No" icon="pi pi-times" text onClick={hideDeleteResourcesDialog} />
+            <Button label="Yes" icon="pi pi-check" text onClick={deleteSelectedResources} />
         </>
     );
     
@@ -292,9 +282,9 @@ const User = () => {
     
                     <DataTable
                         ref={dt}
-                        value={users}
-                        selection={selectedUsers}
-                        onSelectionChange={(e) => setSelectedUsers(e.value as any)}
+                        value={resources}
+                        selection={saveResource}
+                        onSelectionChange={(e) => setSelectedResources(e.value as any)}
                         dataKey="id"
                         paginator
                         rows={10}
@@ -310,90 +300,59 @@ const User = () => {
                         <Column selectionMode="multiple" headerStyle={{ width: '4rem' }}></Column>
                         <Column field="id" header="id" sortable body={idBodyTemplate} headerStyle={{ minWidth: '15rem' }}></Column>
                         <Column field="name" header="Name" sortable body={nameBodyTemplate} headerStyle={{ minWidth: '15rem' }}></Column>
-                        <Column header="login" body={loginBodyTemplate}></Column>
-                        <Column field="email" header="Email" sortable body={emailBodyTemplate} headerStyle={{ minWidth: '10rem' }}></Column>
+                        <Column header="login" body={keyBodyTemplate}></Column>
                     
                         <Column body={actionBodyTemplate} headerStyle={{ minWidth: '10rem' }}></Column>
                     </DataTable>
     
-                    <Dialog visible={userDialog} style={{ width: '450px' }} header="Product Details" modal className="p-fluid" footer={userDialogFooter} onHide={hideDialog}>
+                    <Dialog visible={resourceDialog} style={{ width: '450px' }} header="Product Details" modal className="p-fluid" footer={userDialogFooter} onHide={hideDialog}>
                         <div className="field">
                             <label htmlFor="name">Name</label>
                             <InputText
                                 id="name"
-                                value={user.name}
+                                value={resource.name}
                                 onChange={(e) => onInputChange(e, 'name')}
                                 required
                                 autoFocus
                                 className={classNames({
-                                    'p-invalid': submitted && !user.name
+                                    'p-invalid': submitted && !resource.name
                                 })}
                             />
-                            {submitted && !user.name && <small className="p-invalid">Name is required.</small>}
+                            {submitted && !resource.name && <small className="p-invalid">Name is required.</small>}
                         </div>
     
                         <div className="field">
-                            <label htmlFor="login">Login</label>
+                            <label htmlFor="key">key</label>
                             <InputText
-                                id="login"
-                                value={user.login}
-                                onChange={(e) => onInputChange(e, 'login')}
+                                id="key"
+                                value={resource.key}
+                                onChange={(e) => onInputChange(e, 'key')}
                                 required
                                 autoFocus
                                 className={classNames({
-                                    'p-invalid': submitted && !user.login
+                                    'p-invalid': submitted && !resource.key
                                 })}
                             />
-                            {submitted && !user.login && <small className="p-invalid">login is required.</small>}
-                        </div>
-    
-                        <div className="field">
-                            <label htmlFor="password">Password</label>
-                            <InputText
-                                id="password"
-                                value={user.password}
-                                onChange={(e) => onInputChange(e, 'password')}
-                                required
-                                autoFocus
-                                className={classNames({
-                                    'p-invalid': submitted && !user.password
-                                })}
-                            />
-                            {submitted && !user.password && <small className="p-invalid">Password is required.</small>}
-                        </div>
-    
-                        <div className="field">
-                            <label htmlFor="email">Email</label>
-                            <InputText
-                                id="email"
-                                value={user.email}
-                                onChange={(e) => onInputChange(e, 'email')}
-                                required
-                                autoFocus
-                                className={classNames({
-                                    'p-invalid': submitted && !user.email
-                                })}
-                            />
-                            {submitted && !user.email && <small className="p-invalid">Email is required.</small>}
-                        </div>
+                            {submitted && !resource.key && <small className="p-invalid">key is required.</small>}
+                         </div>
                         
                     </Dialog>
     
-                    <Dialog visible={deleteUserDialog} style={{ width: '450px' }} header="Confirm" modal footer={deleteUserDialogFooter} onHide={hideDeleteUserDialog}>
+                    <Dialog visible={deleteResource} style={{ width: '450px' }} header="Confirm" modal footer={deleteResourceDialogFooter} onHide={hideDeleteResourceDialog}>
                         <div className="flex align-items-center justify-content-center">
                             <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem' }} />
-                            {user && (
+                            {resource && (
                                 <span>
-                                    Are you sure you want to delete <b>{user.name}</b>?
+                                    Are you sure you want to delete <b>{resource.name}</b>?
                                 </span>
                             )}
                         </div>
                     </Dialog>
     
-                    <Dialog visible={deleteUsersDialog} style={{ width: '450px' }} header="Confirm" modal footer={deleteUsersDialogFooter} onHide={hideDeleteUsersDialog}>
+                    <Dialog visible={deleteResourcesDialog} style={{ width: '450px' }} header="Confirm" modal footer={deleteResourcesDialogFooter} onHide={hideDeleteResourcesDialog}>
                         <div className="flex align-items-center justify-content-center">
                             <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem' }} />
-                            {users && <span>Are you sure you want to delete the selected users?</span>}
+                            {resources && <span>Are you sure you want to delete the selected users?</span>}
                         </div>
                     </Dialog>
                 </div>
@@ -402,6 +361,6 @@ const User = () => {
     );
 };
 
-export default User;
+export default Resource;
 
 

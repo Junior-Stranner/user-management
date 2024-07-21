@@ -19,6 +19,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/resource")
+@CrossOrigin
 public class ResourceController {
 
     @Autowired
@@ -48,7 +49,7 @@ public class ResourceController {
                     @ApiResponse(responseCode = "422", description = "Resource not processed due to invalid input data",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
             })
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<ResourceResponseDto> createResource(@RequestBody ResourceRequestDto resourceRequestDto) {
         ResourceResponseDto createdResource = resourceService.create(resourceRequestDto);
         return new ResponseEntity<>(createdResource, HttpStatus.CREATED);
