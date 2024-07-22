@@ -34,4 +34,15 @@ public class UserRequestDto {
     @Email(message = "Invalide format !", regexp = "^[a-z0-9.+-]+@[a-z0-9.-]+\\.[a-z]{2,}$")
     private String email;
 
+
+ /*   public ProfileUserDto(ProfileUser profileUser) {
+        BeanUtils.copyProperties(profileUser, this);
+        if(profileUser != null && profileUser.getUser() != null) {
+            this.user = new UsuarioDTO(profileUser.getUser());
+        }
+        if(profileUser != null && profileUser.getProfile() != null) {
+            this.profile = new PerfilDTO(profileUser.getProfile());
+        }
+    }
+  */
 }

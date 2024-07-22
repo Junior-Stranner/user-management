@@ -26,16 +26,4 @@ public class ProfileUser {
     @JoinColumn(name = "profile_id")
     private Profile profile;
 
-
-  /*  // Construtor que aceita um ProfileUserDto
-    public ProfileUserService(ProfileUserDto dto) {
-        if (dto != null) {
-            this.id = dto.getId(); // Copiar o ID se necessário
-            if (dto.getUser() != null) {
-                this.user = new User(dto.getUser()); // Assumindo que User tem um construtor que aceita UserResponseDto
-            }
-            if (dto.getProfile() != null) {
-                this.profile = new Profile(dto.profile()); // Assumindo que Profile tem um construtor que aceita ProfileDto
-            }
-        }*/
     }

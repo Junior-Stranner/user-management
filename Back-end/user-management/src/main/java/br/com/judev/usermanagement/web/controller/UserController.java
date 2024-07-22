@@ -44,7 +44,7 @@ public class UserController {
 
     @Operation(summary = "Create a new user", description ="Feature to create a new user",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Recurso criado com sucesso",
+                    @ApiResponse(responseCode = "201", description = "Recurso criado com sucesso",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserRequestDto.class))),
                     @ApiResponse(responseCode = "409", description = "User e-mail already exists on system",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),

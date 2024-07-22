@@ -3,14 +3,19 @@ package br.com.judev.usermanagement.web.dto;
 import br.com.judev.usermanagement.entity.Profile;
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import org.springframework.beans.BeanUtils;
 
-@Data
+@NoArgsConstructor
+@Getter@Setter@ToString
 public class ProfileDto {
 
-    @NotBlank(message = "Profile ID cannot be blank")
+    @NotNull(message = "Prifile ID cannot be null")
     private Long profileId;
 
     @NotBlank(message = "Description cannot be blank")

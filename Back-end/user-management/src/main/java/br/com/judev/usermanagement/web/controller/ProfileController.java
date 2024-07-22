@@ -27,7 +27,7 @@ public class ProfileController {
 
     @Operation(summary = "List of all registered Profile", description = "list all Profiles that are on my list",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "List of all registered Profiles",
+                    @ApiResponse(responseCode = "201", description = "List of all registered Profiles",
                             content = @Content(mediaType = "application/json",
                                     array = @ArraySchema(schema = @Schema(implementation = ProfileDto.class)))),
                     @ApiResponse(responseCode = "401", description = "User without permission to access this resource",

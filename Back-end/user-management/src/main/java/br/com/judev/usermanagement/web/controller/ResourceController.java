@@ -27,7 +27,7 @@ public class ResourceController {
 
     @Operation(summary = "List of all registered Resources", description = "list all users that are on my list",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "List of all registered Resources",
+                    @ApiResponse(responseCode = "201", description = "List of all registered Resources",
                             content = @Content(mediaType = "application/json",
                                     array = @ArraySchema(schema = @Schema(implementation = ResourceRequestDto.class)))),
                     @ApiResponse(responseCode = "401", description = "Resources without permission to access this resource",

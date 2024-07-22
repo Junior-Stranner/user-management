@@ -26,6 +26,4 @@ public class Profile {
     public Profile(Profile profileDto) {
         BeanUtils.copyProperties(profileDto, this);
     }
-
-
 }
