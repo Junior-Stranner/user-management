@@ -11,7 +11,7 @@ public interface ProfileService {
 
     public List<ProfileDto> getProfile();
     public ProfileDto saveProfile(ProfileDto dto);
-    public ProfileDto update(ProfileDto dto, Long profileId);
+    public ProfileDto updateDesc(ProfileDto dto, Long profileId);
     public void delete(Long profileId);
     public ProfileDto getProfileById(Long profileId);
 }

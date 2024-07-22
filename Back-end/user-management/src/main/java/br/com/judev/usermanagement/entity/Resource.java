@@ -17,13 +17,13 @@ import java.util.Objects;
 public class Resource {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
     private String name;
     @Column(nullable = false , unique = true)
-    private String key;
+    private String resource_key;
 
 
     @Override

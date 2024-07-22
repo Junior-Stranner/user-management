@@ -53,9 +53,9 @@ public class ProfileController {
     }
 
 
-    @Operation(summary = "Create a new Profile", description ="Feature to update a Profile",
+    @Operation(summary = "update Description from Profile", description ="Feature to update a description ",
             responses = {
-                    @ApiResponse(responseCode = "204", description = "Profile updadet Sucessfully",
+                    @ApiResponse(responseCode = "204", description = "Description updadet Sucessfully",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProfileDto.class))),
                     @ApiResponse(responseCode = "400", description = " description does not match",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
@@ -66,10 +66,10 @@ public class ProfileController {
                     @ApiResponse(responseCode = "422", description = "Invalid or poorly formatted fields",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
             })
-    @PutMapping("/{profileId}")
+    @PatchMapping("/{profileId}")
     public ProfileDto updateProfile(@PathVariable Long profileId, @RequestBody ProfileDto profileDto) {
         profileService.getProfileById(profileId);
-        return profileService.update(profileDto, profileId);
+        return profileService.updateDesc(profileDto, profileId);
     }
 
     @Operation(summary = "Delete Profile",

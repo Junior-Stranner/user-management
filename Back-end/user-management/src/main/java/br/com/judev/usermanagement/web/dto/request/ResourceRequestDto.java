@@ -14,6 +14,6 @@ public class ResourceRequestDto {
     private String name;
     @NotBlank(message = "Key cannot be blank")
     @Size(min = 6, max = 20, message = "Key must be between 6 and 20 characters")
-    private String key;
+    private String resource_Key;
 
 }

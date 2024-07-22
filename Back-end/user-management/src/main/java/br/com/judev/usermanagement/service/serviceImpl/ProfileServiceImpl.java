@@ -38,7 +38,7 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public ProfileDto update(ProfileDto dto, Long profileId) {
+    public ProfileDto updateDesc(ProfileDto dto, Long profileId) {
         Optional<Profile> optionalProfile = profileRepository.findById(profileId);
         if (optionalProfile.isPresent()) {
             Profile profile = optionalProfile.get();

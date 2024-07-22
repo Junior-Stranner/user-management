@@ -56,19 +56,19 @@ public class ResourceController {
     }
 
 
-    @Operation(summary = "update a new Resource", description ="Feature to update a Resource",
+    @Operation(summary = "update Name from  Resource", description ="Feature to update Resource Name ",
             responses = {
-                    @ApiResponse(responseCode = "204", description = "Resource updadet Sucessfully",
+                    @ApiResponse(responseCode = "204", description = "Name  updadet Sucessfully",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ResourceRequestDto.class))),
                     @ApiResponse(responseCode = "404", description = "Resource not found",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
                     @ApiResponse(responseCode = "422", description = "Invalid or poorly formatted fields",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
             })
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<ResourceResponseDto> updateResource(@PathVariable("id") Long resourceId, @RequestBody ResourceRequestDto resourceRequestDto) {
         try {
-            ResourceResponseDto updatedResource = resourceService.update(resourceId, resourceRequestDto);
+            ResourceResponseDto updatedResource = resourceService.updateName(resourceId, resourceRequestDto);
             return new ResponseEntity<>(updatedResource, HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);

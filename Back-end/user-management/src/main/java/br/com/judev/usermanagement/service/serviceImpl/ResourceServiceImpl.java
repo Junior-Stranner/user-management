@@ -41,7 +41,7 @@ public class ResourceServiceImpl implements ResourceService {
 
 
     @Override
-    public ResourceResponseDto update(Long resourceId, ResourceRequestDto resourceRequestDto) {
+    public ResourceResponseDto updateName(Long resourceId, ResourceRequestDto resourceRequestDto) {
          Optional<Resource> optionalResource = resourceRepository.findById(resourceId);
              if(optionalResource.isPresent()){
              Resource resource = optionalResource.get();

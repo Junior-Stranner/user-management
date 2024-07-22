@@ -16,7 +16,7 @@ public class ResourceValidator {
         }
     }
     public  void validateKey(Resource resource, ResourceRequestDto resourceDto) {
-        if (!resource.getKey().equals(resourceDto.getKey())) {
+        if (!resource.getResource_key().equals(resourceDto.getResource_Key())) {
             throw new IllegalArgumentException("Key can't be changed!");
         }
     }
