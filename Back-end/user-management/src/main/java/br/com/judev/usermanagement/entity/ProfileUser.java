@@ -2,6 +2,7 @@ package br.com.judev.usermanagement.entity;
 
 import br.com.judev.usermanagement.web.dto.ProfileUserDto;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,18 +13,31 @@ import org.springframework.beans.BeanUtils;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class ProfileUser {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @EmbeddedId
+    private ProfileUserPK id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "profile_id")
-    private Profile profile;
-
+    public ProfileUser(Profile profile, User user) {
+        id.setProfile(profile);
+        id.setUser(user);
     }
+
+    public Profile getProfile() {
+        return id.getProfile();
+    }
+
+    public void setProfile(Profile profile){
+        id.setProfile(profile);
+    }
+
+    public User getUser() {
+         return id.getUser();
+    }
+
+    public void setUser(User user) {
+        this.id.setUser(user);
+    }
+}
