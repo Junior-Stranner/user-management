@@ -1,4 +1,4 @@
-package br.com.judev.usermanagement.config;
+package br.com.judev.usermanagement.infra.config;
 
 
 import io.swagger.v3.oas.models.Components;
