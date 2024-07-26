@@ -5,7 +5,7 @@ import br.com.judev.usermanagement.exception.EntityAlreadyExists;
 import br.com.judev.usermanagement.exception.EntityNotFoundException;
 import br.com.judev.usermanagement.repository.UserRepository;
 import br.com.judev.usermanagement.service.UserService;
-import br.com.judev.usermanagement.web.dto.request.UserRequestDto;
+import br.com.judev.usermanagement.web.dto.request.RegisterUserRequestDto;
 import br.com.judev.usermanagement.web.dto.response.UserResponseDto;
 import br.com.judev.usermanagement.web.mapper.UserMapper;
 import br.com.judev.usermanagement.web.validators.UserValidator;
@@ -35,7 +35,7 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public UserResponseDto create(UserRequestDto userDto) {
+    public UserResponseDto create(RegisterUserRequestDto userDto) {
         List<User> users = userRepository.findAll();
         boolean userExists = users.stream().anyMatch(uExists -> uExists.getEmail().equals(userDto.getEmail()));
         if (userExists) {
@@ -54,7 +54,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponseDto update(Long userId, UserRequestDto userDto) {
+    public UserResponseDto update(Long userId, RegisterUserRequestDto userDto) {
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();

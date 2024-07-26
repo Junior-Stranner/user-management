@@ -1,15 +1,10 @@
 package br.com.judev.usermanagement.entity;
 
-import br.com.judev.usermanagement.web.dto.request.UserRequestDto;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.beans.BeanUtils;
 
 import java.util.Objects;
 
@@ -26,8 +21,8 @@ public class User {
     @Column(nullable = false, length = 200)
     private String name;
 
-    @Column(nullable = false, length = 100, unique = true)
-    private String login;
+    @Column(unique = true, nullable = false)
+    private String cpfCnpj;
 
     @Column(nullable = false, length = 100)
     private String password;

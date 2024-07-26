@@ -1,13 +1,10 @@
 package br.com.judev.usermanagement.web.dto;
 
-import br.com.judev.usermanagement.entity.ProfileUser;
-import br.com.judev.usermanagement.web.dto.request.UserRequestDto;
-import br.com.judev.usermanagement.web.dto.response.UserResponseDto;
+import br.com.judev.usermanagement.web.dto.request.RegisterUserRequestDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.beans.BeanUtils;
 
 @Getter
 @Setter
@@ -16,7 +13,7 @@ import org.springframework.beans.BeanUtils;
 public class ProfileUserDto {
 
     private Long id;
-    private UserRequestDto user;
+    private RegisterUserRequestDto user;
     private ProfileDto profile;
 
    /* public ProfileUserDto(ProfileUserService entity) {

@@ -10,7 +10,6 @@ import br.com.judev.usermanagement.repository.ProfileUserRepository;
 import br.com.judev.usermanagement.repository.UserRepository;
 import br.com.judev.usermanagement.service.ProfileUserService;
 import br.com.judev.usermanagement.web.dto.ProfileUserDto;
-import br.com.judev.usermanagement.web.dto.request.UserRequestDto;
 import br.com.judev.usermanagement.web.mapper.ProfileUserMapper;
 import br.com.judev.usermanagement.web.validators.ProfileUserValidator;
 import lombok.RequiredArgsConstructor;

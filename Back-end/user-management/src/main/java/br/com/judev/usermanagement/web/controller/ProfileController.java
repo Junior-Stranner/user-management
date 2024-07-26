@@ -2,7 +2,6 @@ package br.com.judev.usermanagement.web.controller;
 
 import br.com.judev.usermanagement.service.ProfileService;
 import br.com.judev.usermanagement.web.dto.ProfileDto;
-import br.com.judev.usermanagement.web.dto.request.UserRequestDto;
 import br.com.judev.usermanagement.web.exception.ErrorMessage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;

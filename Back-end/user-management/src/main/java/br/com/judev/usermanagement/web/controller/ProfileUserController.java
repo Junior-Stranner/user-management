@@ -4,7 +4,6 @@ import br.com.judev.usermanagement.exception.EntityAlreadyExists;
 import br.com.judev.usermanagement.exception.EntityNotFoundException;
 import br.com.judev.usermanagement.service.ProfileUserService;
 import br.com.judev.usermanagement.web.dto.ProfileUserDto;
-import br.com.judev.usermanagement.web.dto.request.UserRequestDto;
 import br.com.judev.usermanagement.web.exception.ErrorMessage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;

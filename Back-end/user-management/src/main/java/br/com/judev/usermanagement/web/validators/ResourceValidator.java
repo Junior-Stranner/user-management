@@ -1,9 +1,7 @@
 package br.com.judev.usermanagement.web.validators;
 
 import br.com.judev.usermanagement.entity.Resource;
-import br.com.judev.usermanagement.entity.User;
 import br.com.judev.usermanagement.web.dto.request.ResourceRequestDto;
-import br.com.judev.usermanagement.web.dto.request.UserRequestDto;
 import org.springframework.stereotype.Component;
 
 @Component

@@ -14,7 +14,6 @@ public class EmailService {
 
     private final JavaMailSender mailSender;
 
-
     /**
      * Sends a verification code to the provided email address.
      *
@@ -30,6 +29,24 @@ public class EmailService {
         simpleMailMessage.setText(message);
 
         sendEmail(simpleMailMessage);
+    }
+
+    public void sendWelcomeMessageToNewUser(String email, String name) {
+        String message = "Hello " + name + "\n"+
+                "\n" +
+                "Welcome to Judev User-Management ! We are  happy to have you with us.\n" +
+                "\n" +
+                "We hope you enjoy our services to the fullest. If you have any questions or suggestions, please do not hesitate to contact us.\n" +
+                "\n" +
+                "Best regards,\n" +
+                "Judev Systems Team";
+
+        SimpleMailMessage emailToSend = new SimpleMailMessage();
+        emailToSend.setTo(email);
+        emailToSend.setSubject("Welcome to Judev System!");
+        emailToSend.setText(message);
+
+        sendEmail(emailToSend);
     }
 
     /**
