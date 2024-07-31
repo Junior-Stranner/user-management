@@ -3,7 +3,6 @@ package br.com.judev.usermanagement.web.mapper;
 import br.com.judev.usermanagement.entity.ProfileUser;
 import br.com.judev.usermanagement.entity.User;
 import br.com.judev.usermanagement.web.dto.ProfileUserDto;
-import br.com.judev.usermanagement.web.dto.response.UserResponseDto;
 import org.modelmapper.ModelMapper;
 
 import java.util.List;

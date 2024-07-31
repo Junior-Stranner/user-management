@@ -16,6 +16,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -37,9 +38,9 @@ public class AuthController {
             })
     @ExceptionHandler(EntityAlreadyExists.class)
     @PostMapping("/register")
-    public ResponseEntity<RegisterUserResponseDto> register(@RequestBody @Valid RegisterUserRequestDto userDto) {
-        RegisterUserResponseDto response = userService.register(userDto);
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    public ResponseEntity<String> register(@RequestBody @Valid RegisterUserRequestDto userDto) {
+        userService.register(userDto);
+        return new ResponseEntity<>("User registered successfully", HttpStatus.CREATED);
     }
 
     @Operation(summary = "Login a  user", description ="Feature to login user",

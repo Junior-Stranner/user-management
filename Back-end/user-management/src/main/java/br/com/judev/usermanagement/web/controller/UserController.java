@@ -1,10 +1,10 @@
 package br.com.judev.usermanagement.web.controller;
 
-import br.com.judev.usermanagement.exception.EntityAlreadyExists;
 import br.com.judev.usermanagement.exception.EntityNotFoundException;
 import br.com.judev.usermanagement.exception.NameNotChangeException;
 import br.com.judev.usermanagement.service.UserService;
 import br.com.judev.usermanagement.web.dto.request.RegisterUserRequestDto;
+import br.com.judev.usermanagement.web.dto.request.UserRequestDto;
 import br.com.judev.usermanagement.web.dto.response.UserResponseDto;
 import br.com.judev.usermanagement.web.exception.ErrorMessage;
 import io.swagger.v3.oas.annotations.Operation;
@@ -40,7 +40,7 @@ public class UserController {
         return userService.listAll();
     }
 
-    @Operation(summary = "Create a new user", description ="Feature to create a new user",
+  /*  @Operation(summary = "Create a new user", description ="Feature to create a new user",
             responses = {
                     @ApiResponse(responseCode = "201", description = "Recurso criado com sucesso",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = RegisterUserRequestDto.class))),
@@ -53,7 +53,7 @@ public class UserController {
     @PostMapping("/create")
     public UserResponseDto createUser(@RequestBody RegisterUserRequestDto userDto) {
         return userService.create(userDto);
-    }
+    }*/
 
     @Operation(summary = "update a new user", description ="Feature to update a user",
             responses = {
@@ -70,7 +70,7 @@ public class UserController {
             })
     @ExceptionHandler(NameNotChangeException.class)
     @PutMapping("/{userId}")
-    public UserResponseDto updateUser(@PathVariable Long userId, @RequestBody RegisterUserRequestDto userDto) {
+    public UserResponseDto updateUser(@PathVariable Long userId, @RequestBody UserRequestDto userDto) {
         return userService.update(userId, userDto);
     }
 

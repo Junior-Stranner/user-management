@@ -10,9 +10,12 @@ import br.com.judev.usermanagement.service.EmailService;
 import br.com.judev.usermanagement.service.UserService;
 import br.com.judev.usermanagement.web.dto.request.LoginRequestDto;
 import br.com.judev.usermanagement.web.dto.request.RegisterUserRequestDto;
+import br.com.judev.usermanagement.web.dto.request.UserRequestDto;
 import br.com.judev.usermanagement.web.dto.response.LoginResponseDto;
 import br.com.judev.usermanagement.web.dto.response.RegisterUserResponseDto;
+import br.com.judev.usermanagement.web.dto.response.UserResponseDto;
 import br.com.judev.usermanagement.web.mapper.UserMapper;
+import br.com.judev.usermanagement.web.mapper.UserRegisterMapper;
 import br.com.judev.usermanagement.web.validators.UserValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -34,7 +37,7 @@ public class UserServiceImpl implements UserService {
     private final TokenService tokenService;
 
     @Override
-    public List<RegisterUserResponseDto> listAll() {
+    public List<UserResponseDto> listAll() {
         List<User> users = StreamSupport
                 .stream(userRepository.findAll().spliterator(), false)
                 .collect(Collectors.toList());
@@ -53,14 +56,14 @@ public class UserServiceImpl implements UserService {
                 throw new EntityAlreadyExists("User with CPF/CNPJ " + userDto.getCpfCnpj() + " already exists.");
         }
 
-        User newUser = UserMapper.toUser(userDto);
+        User newUser = UserRegisterMapper.toUser(userDto);
         // Criptografa a senha na entidade antes de salvar
         newUser.setPassword(passwordEncoder.encode(userDto.getPassword()));
         User savedUser = userRepository.save(newUser);
 
         emailService.sendWelcomeMessageToNewUser(savedUser.getEmail(), savedUser.getName());
 
-        return UserMapper.ToDto(savedUser);
+        return UserRegisterMapper.ToDto(savedUser);
     }
 
     @Override
@@ -78,7 +81,7 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public RegisterUserResponseDto update(Long userId, RegisterUserRequestDto userDto) {
+    public UserResponseDto update(Long userId, UserRequestDto userDto) {
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
@@ -88,7 +91,6 @@ public class UserServiceImpl implements UserService {
                 user.setName(userDto.getName());
             }
             validator.validateEmail(user, userDto);
-            validator.validateLogin(user, userDto);
             validator.validatePassword(user, userDto);
 
             user.setName(userDto.getName());
@@ -101,11 +103,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public RegisterUserResponseDto updatePassword(Long userId, String currentPassword, String newPassword, String confirmPassword) {
+    public UserResponseDto updatePassword(Long userId, String currentPassword, String newPassword, String confirmPassword) {
         if(!newPassword.equals(confirmPassword)){
             throw new PasswordInvalidException("New password does not match password confirmation.");
         }
-        RegisterUserResponseDto user = getUserById(userId);
+        UserResponseDto user = getUserById(userId);
         if(!passwordEncoder.matches(currentPassword, user.getPassword())){
             throw new PasswordInvalidException("Your password does not match.");
         }
@@ -123,7 +125,7 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public RegisterUserResponseDto getUserById(Long userId) {
+    public UserResponseDto getUserById(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new EntityNotFoundException("User not found with id: " + userId));
         return UserMapper.ToDto(user);
