@@ -30,7 +30,6 @@ public class CpfCnpjValidator implements ConstraintValidator<CpfCnpj, String> {
 
     private boolean isValidCpf(String cpf) {
         // Implement CPF validation logic
-        // For example:
         if (cpf.length() != 11) return false;
         // Add CPF validation algorithm here
         return true;
@@ -38,7 +37,6 @@ public class CpfCnpjValidator implements ConstraintValidator<CpfCnpj, String> {
 
     private boolean isValidCnpj(String cnpj) {
         // Implement CNPJ validation logic
-        // For example:
         if (cnpj.length() != 14) return false;
         // Add CNPJ validation algorithm here
         return true;

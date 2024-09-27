@@ -34,12 +34,11 @@ public class TokenService {
     }
 
     // Método para validar um token JWT fornecido
-    // Método para validar um token JWT fornecido
     public String validateToken(String token) {
+        if (token == null || token.trim().isEmpty()) {
+            throw new RuntimeException("INVALID TOKEN: Token is null or empty");
+        }
         try {
-            if (token == null || token.trim().isEmpty()) {
-                throw new RuntimeException("INVALID TOKEN: Token is null or empty");
-            }
             Algorithm algorithm = Algorithm.HMAC256(secret);
             return JWT.require(algorithm)
                     .withIssuer("login-auth-api")

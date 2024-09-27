@@ -82,24 +82,24 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDto update(Long userId, UserRequestDto userDto) {
-        Optional<User> optionalUser = userRepository.findById(userId);
-        if (optionalUser.isPresent()) {
-            User user = optionalUser.get();
 
-            if (userDto.getName() != null) {
-                validator.validateName(user, userDto);
-                user.setName(userDto.getName());
-            }
-            validator.validateEmail(user, userDto);
-            validator.validatePassword(user, userDto);
+        User entity = userRepository.findById(userId).orElseThrow(
+                () -> new EntityNotFoundException("User not found with id: " + userId));
 
-            user.setName(userDto.getName());
-
-            User updatedUser = userRepository.save(user);
-            return UserMapper.ToDto(updatedUser);
-        } else {
-            throw new EntityNotFoundException("User not found with id: " + userId);
+        if (!entity.getCpfCnpj().equals(userDto.getCpfCnpj())) {
+            throw new EntityNotFoundException("ENTITY NOT FOUND");
         }
+
+        if (userDto.getName() != null) {
+            validator.validateName(entity, userDto);
+            entity.setName(userDto.getName());
+        }
+
+        validator.validateEmail(entity, userDto);
+        validator.validatePassword(entity, userDto);
+
+        User updatedUser = userRepository.save(entity);
+        return UserMapper.ToDto(updatedUser);
     }
 
     @Override
