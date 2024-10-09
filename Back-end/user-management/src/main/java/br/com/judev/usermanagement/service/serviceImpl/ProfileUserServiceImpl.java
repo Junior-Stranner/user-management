@@ -31,15 +31,15 @@ public class ProfileUserServiceImpl implements ProfileUserService {
 
     @Override
     public ProfileUserDto create(ProfileUserDto profileUserDto) {
-        if (profileUserDto.getProfile().getProfileId() == null || profileUserDto.getUser().getUserId() == null) {
+        if (profileUserDto == null || profileUserDto == null) {
             throw new IllegalArgumentException("Profile ID and User ID must be provided");
         }
 
-        Profile profile = profileRepository.findById(profileUserDto.getProfile().getProfileId())
-                .orElseThrow(() -> new ProfileNotFoundException("Profile not found with id: " + profileUserDto.getProfile().getProfileId()));
+        Profile profile = profileRepository.findById(profileUserDto.getId())
+                .orElseThrow(() -> new ProfileNotFoundException("Profile not found with id: " ));
 
-        User user = userRepository.findById(profileUserDto.getUser().getUserId())
-                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + profileUserDto.getUser().getUserId()));
+        User user = userRepository.findById(profileUserDto.getId())
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " ));
 
         ProfileUser profileUser = new ProfileUser();
         profileUser.setProfile(profile);
@@ -56,19 +56,14 @@ public class ProfileUserServiceImpl implements ProfileUserService {
                 .collect(Collectors.toList());
         return ProfileUserMapper.toListDto(profileUserList);
     }
+
     @Override
     public ProfileUserDto update(Long profileUserId, ProfileUserDto profileUserDto) {
-
-        Profile profile = profileRepository.findById(profileUserDto.getProfile().getProfileId())
-                .orElseThrow(() -> new ProfileNotFoundException("Profile not found with id: " + profileUserDto.getProfile().getProfileId()));
-
-        User user = userRepository.findById(profileUserDto.getUser().getUserId())
-                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + profileUserDto.getUser().getUserId()));
 
         ProfileUser existingProfileUser = profileUserRepository.findById(profileUserId)
                 .orElseThrow(() -> new EntityNotFoundException("ProfileUser not found with id: " + profileUserId));
 
-        if (profileUserDto.getProfile() != null && !profileUserDto.getProfile().getProfileId().equals(existingProfileUser.getProfile().getId())) {
+      /*  if (profileUserDto.getProfile() != null && !profileUserDto.getProfile().getProfileId().equals(existingProfileUser.getProfile().getId())) {
             validator.validateProfile(profile, profileUserDto.getProfile());
             existingProfileUser.setProfile(profile);
         }
@@ -76,8 +71,10 @@ public class ProfileUserServiceImpl implements ProfileUserService {
         if (profileUserDto.getUser() != null && !profileUserDto.getUser().getUserId().equals(existingProfileUser.getUser().getId())) {
             validator.ValiteUser(user, profileUserDto.getUser());
             existingProfileUser.setUser(user);
-        }
-
+        }*/
+        ProfileUser profileUser = new ProfileUser();
+        profileUser.setProfile(profileUserDto.getProfile());
+        profileUser.setUser(profileUserDto.getUser());
         ProfileUser updatedProfileUser = profileUserRepository.save(existingProfileUser);
 
         return ProfileUserMapper.ToDto(updatedProfileUser);

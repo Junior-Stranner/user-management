@@ -1,5 +1,6 @@
 package br.com.judev.usermanagement.web.dto.request;
 
+import br.com.judev.usermanagement.entity.User;
 import br.com.judev.usermanagement.exception.CpfCnpj;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -12,10 +13,10 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class UserRequestDto {
+public class UserRequestDto extends User {
 
-    @NotNull(message = "User ID cannot be null")
-    private Long userId;
+ /*   @NotNull(message = "User ID cannot be null")
+    private Long userId;*/
 
     @NotBlank(message = "Name cannot be blank")
     @Size(min = 5, max = 100, message = "Name must be between 5 and 100 characters")

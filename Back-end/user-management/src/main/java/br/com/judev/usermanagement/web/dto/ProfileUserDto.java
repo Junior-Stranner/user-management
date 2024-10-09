@@ -1,6 +1,8 @@
 package br.com.judev.usermanagement.web.dto;
 
 import br.com.judev.usermanagement.web.dto.request.RegisterUserRequestDto;
+import br.com.judev.usermanagement.web.dto.request.UserRequestDto;
+import br.com.judev.usermanagement.web.dto.response.UserResponseDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,7 +15,7 @@ import lombok.Setter;
 public class ProfileUserDto {
 
     private Long id;
-    private RegisterUserRequestDto user;
+    private UserRequestDto user;
     private ProfileDto profile;
 
    /* public ProfileUserDto(ProfileUserService entity) {

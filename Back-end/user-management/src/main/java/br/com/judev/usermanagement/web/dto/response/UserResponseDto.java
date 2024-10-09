@@ -14,8 +14,9 @@ import lombok.*;
 @ToString
 public class UserResponseDto {
 
+    private Long userId;
     private String name;
-    String cpfCnpj;
+    private String cpfCnpj;
     private String password;
     private String email;
 

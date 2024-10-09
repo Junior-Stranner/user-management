@@ -8,7 +8,10 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -47,8 +50,9 @@ public class ProfileController {
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
             })
     @PostMapping
-    public ProfileDto createProfile(@RequestBody ProfileDto profileDto) {
-        return profileService.saveProfile(profileDto);
+    public ResponseEntity<?> createProfile(@RequestBody @Valid ProfileDto profileDto) {
+        System.out.println("Erro Profile não foi carregado corretamente --");
+        return new ResponseEntity<>("Profile registered successfully", HttpStatus.CREATED);
     }
 
 

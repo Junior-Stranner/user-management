@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class EmailService {
 
-    private final JavaMailSender mailSender;
+    private JavaMailSender mailSender;
 
     /**
      * Sends a verification code to the provided email address.

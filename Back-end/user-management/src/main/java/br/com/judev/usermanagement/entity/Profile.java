@@ -1,6 +1,7 @@
 package br.com.judev.usermanagement.entity;
 
 
+import br.com.judev.usermanagement.web.dto.ProfileDto;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.EqualsAndHashCode;
@@ -23,7 +24,7 @@ public class Profile {
     @Column(nullable = false , unique = true)
     private String descricao;
 
-    public Profile(Profile profileDto) {
+    public Profile(ProfileDto profileDto) {
         BeanUtils.copyProperties(profileDto, this);
     }
 }

@@ -64,14 +64,17 @@ public class SecurityFilter extends OncePerRequestFilter {
      */
     // Método para recuperar o token do cabeçalho Authorization
     private String recoverToken(HttpServletRequest request) {
-        String authorizationHeader = request.getHeader("Authorization");
+       /* String authorizationHeader = request.getHeader("Authorization");
         System.out.println("Authorization Header: " + authorizationHeader);
 
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             return authorizationHeader.substring(7);
         } else {
             throw new RuntimeException("Authorization header missing or invalid");
-        }
-    }
+        }*/
 
+        var authHeader = request.getHeader("Authorization");
+        if (authHeader == null) return null;
+        return authHeader.replace("Bearer ", "");
+       }
 }

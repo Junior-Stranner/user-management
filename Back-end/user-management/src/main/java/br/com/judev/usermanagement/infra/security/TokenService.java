@@ -46,7 +46,8 @@ public class TokenService {
                     .verify(token)
                     .getSubject();
         } catch (JWTVerificationException e) {
-            throw new RuntimeException("INVALID TOKEN: Verification failed", e);
+            return null;
+     //       throw new RuntimeException("INVALID TOKEN: Verification failed", e);
         }
     }
     // Método para gerar a data de expiração do token (10 minutos a partir do momento atual)

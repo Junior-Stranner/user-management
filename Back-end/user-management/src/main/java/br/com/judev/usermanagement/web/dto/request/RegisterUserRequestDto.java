@@ -14,8 +14,8 @@ import lombok.*;
 @ToString
 public class RegisterUserRequestDto {
 
-    @NotNull(message = "User ID cannot be null")
-    private Long userId;
+/*    @NotNull(message = "User ID cannot be null")
+    private Long userId;*/
 
     @NotBlank(message = "Name cannot be blank")
     @Size(min = 5, max = 100, message = "Name must be between 5 and 100 characters")
