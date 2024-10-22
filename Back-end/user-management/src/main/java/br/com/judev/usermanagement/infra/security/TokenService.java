@@ -24,7 +24,7 @@ public class TokenService {
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
             return JWT.create()
-                    .withIssuer("login-auth-api") // Mude aqui para corresponder ao issuer do validateToken
+                    .withIssuer("auth-api") // Mude aqui para corresponder ao issuer do validateToken
                     .withSubject(user.getEmail())
                     .withExpiresAt(toExpireDateTime())
                     .sign(algorithm);
@@ -32,6 +32,20 @@ public class TokenService {
             throw new RuntimeException("ERROR: Token was not generated", exception);
         }
     }
+    public String generateTemporaryTokenToRecoveryPassword (User user) {
+        try {
+            Algorithm algorithm = Algorithm.HMAC256(secret);
+            String token = JWT.create()
+                    .withIssuer("auth-api")
+                    .withSubject(user.getEmail())
+                    .withExpiresAt(LocalDateTime.now().plusMinutes(15).toInstant(ZoneOffset.of("-3")))
+                    .sign(algorithm);
+            return token;
+        } catch (JWTCreationException e) {
+            throw new RuntimeException("ERROR WHILE CREATE TOKEN");
+        }
+    }
+
 
     // Método para validar um token JWT fornecido
     public String validateToken(String token) {
@@ -41,7 +55,7 @@ public class TokenService {
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
             return JWT.require(algorithm)
-                    .withIssuer("login-auth-api")
+                    .withIssuer("auth-api")
                     .build()
                     .verify(token)
                     .getSubject();

@@ -9,8 +9,8 @@ public class RegisterUserResponseDto  {
 
     private Long userId;
     private String name;
-    private String cpfCnpj;
-    private String password;
     private String email;
+    private String password;
+    private String role;
 
 }

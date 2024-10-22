@@ -1,4 +1,4 @@
-package br.com.judev.usermanagement.entity;
+/*package br.com.judev.usermanagement.entity;
 
 import br.com.judev.usermanagement.web.dto.ProfileUserDto;
 import jakarta.persistence.*;
@@ -41,3 +41,4 @@ public class ProfileUser {
         this.id.setUser(user);
     }
 }
+*/

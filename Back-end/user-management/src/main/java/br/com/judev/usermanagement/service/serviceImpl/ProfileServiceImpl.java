@@ -1,4 +1,4 @@
-package br.com.judev.usermanagement.service.serviceImpl;
+/*package br.com.judev.usermanagement.service.serviceImpl;
 
 import br.com.judev.usermanagement.entity.Profile;
 import br.com.judev.usermanagement.exception.EntityNotFoundException;
@@ -18,25 +18,28 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class ProfileServiceImpl implements ProfileService {
 
-    private  final ProfileValidator validator;
+   private  final ProfileValidator validator;
 
-    private final ProfileRepository profileRepository;
+   private final ProfileRepository profileRepository;
 
-    @Override
-    public List<ProfileDto> getProfile() {
-        List<Profile> profiles = profileRepository.findAll();
-        return profiles.stream().map(ProfileDto::new).collect(Collectors.toList());
-    }
+   @Override
+   public List<ProfileDto> getProfile() {
+       List<Profile> profiles = profileRepository.findAll();
+       return profiles.stream().map(ProfileDto::new).collect(Collectors.toList());
+   }
 
-    @Override
-    public ProfileDto saveProfile(ProfileDto dto) {
-        Profile profile = new Profile();
-        profile.setDescricao(dto.getDescricao());
-        Profile saveProfile = profileRepository.save(profile);
-        return new ProfileDto(saveProfile);
-    }
+  @Override
+   public ProfileDto saveProfile(ProfileDto dto) {
+       Profile profile = new Profile();
+       profile.setDescricao(dto.getDescricao());
+       Profile saveProfile = profileRepository.save(profile);
+       return new ProfileDto(saveProfile);
+   }
 
-    @Override
+import br.com.judev.usermanagement.exception.ProfileNotFoundException;
+import br.com.judev.usermanagement.web.dto.ProfileDto;
+
+@Override
     public ProfileDto updateDesc(ProfileDto dto, Long profileId) {
         Optional<Profile> optionalProfile = profileRepository.findById(profileId);
         if (optionalProfile.isPresent()) {
@@ -70,3 +73,4 @@ public class ProfileServiceImpl implements ProfileService {
         return new ProfileDto(profile);
     }
 }
+*/

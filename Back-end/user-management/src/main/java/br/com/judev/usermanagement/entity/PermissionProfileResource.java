@@ -21,10 +21,6 @@ public class PermissionProfileResource {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "profile_id")
-    private Profile perfil;
-
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "resource_id")
     private Resource recurso;
 

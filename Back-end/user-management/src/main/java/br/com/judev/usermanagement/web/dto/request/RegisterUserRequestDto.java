@@ -32,6 +32,7 @@ public class RegisterUserRequestDto {
     @Email(message = "Invalide format !", regexp = "^[a-z0-9.+-]+@[a-z0-9.-]+\\.[a-z]{2,}$")
     private String email;
 
+    private String role;
 
  /*   public ProfileUserDto(ProfileUser profileUser) {
         BeanUtils.copyProperties(profileUser, this);

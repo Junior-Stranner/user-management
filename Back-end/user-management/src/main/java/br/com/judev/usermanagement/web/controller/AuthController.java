@@ -1,6 +1,8 @@
 package br.com.judev.usermanagement.web.controller;
 
+import br.com.judev.usermanagement.entity.User;
 import br.com.judev.usermanagement.exception.EntityAlreadyExists;
+import br.com.judev.usermanagement.repository.UserRepository;
 import br.com.judev.usermanagement.service.UserService;
 import br.com.judev.usermanagement.web.dto.PasswordRecoveryDto;
 import br.com.judev.usermanagement.web.dto.request.LoginRequestDto;
@@ -12,19 +14,27 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+
+@Slf4j
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
     private final UserService userService;
+
+    private final UserRepository userRepository;
 
 
     @Operation(summary = "Create a new user", description ="Feature to create a new user",

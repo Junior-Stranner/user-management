@@ -22,28 +22,30 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public class SecurityFilter extends OncePerRequestFilter {
 
-    private final TokenService tokenService;
-    private final UserRepository userRepository;
+    @Autowired
+    private TokenService tokenService;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String token = null;
         try {
-            token = recoverToken(request);
+            String token = recoverToken(request);
+            String login = tokenService.validateToken(token); // Valida o token e recupera o login
 
-            // Valida o token e recupera o login
-            String login = tokenService.validateToken(token);
-
-            if (login != null) {
+            if (login != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 // Recupera os detalhes do usuário a partir do login
                 UserDetails userDetails = customUserDetailsService.loadUserByUsername(login);
-              //  var authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
+                var authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
+
                 // Cria um objeto de autenticação e define no contexto de segurança
-                var authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                var authentication = new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         } catch (RuntimeException e) {
@@ -74,7 +76,9 @@ public class SecurityFilter extends OncePerRequestFilter {
         }*/
 
         var authHeader = request.getHeader("Authorization");
-        if (authHeader == null) return null;
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new RuntimeException("Authorization header missing or invalid");
+        }
         return authHeader.replace("Bearer ", "");
        }
 }

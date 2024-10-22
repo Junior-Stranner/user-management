@@ -1,4 +1,4 @@
-package br.com.judev.usermanagement.web.controller;
+/*package br.com.judev.usermanagement.web.controller;
 
 import br.com.judev.usermanagement.exception.EntityAlreadyExists;
 import br.com.judev.usermanagement.exception.EntityNotFoundException;
@@ -128,3 +128,4 @@ public class ProfileUserController {
         }
     }
 }
+*/

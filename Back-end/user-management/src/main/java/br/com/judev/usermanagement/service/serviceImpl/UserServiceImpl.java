@@ -48,7 +48,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public RegisterUserResponseDto register(RegisterUserRequestDto userDto) {
         Optional<User> user = userRepository.findByEmailOrCpfCnpj(userDto.getEmail(), userDto.getCpfCnpj());
-        if (user.isPresent()) {
+        if (user != null) {
             if (user.get().getEmail().equals(userDto.getEmail()))
                 throw new EntityAlreadyExists("User with email " + userDto.getEmail() + " already exists.");
 
@@ -76,7 +76,7 @@ public class UserServiceImpl implements UserService {
         }
         // Gera o token e retorna o DTO de resposta de login
         String token = tokenService.generateToken(user);
-        return new LoginResponseDto(user.getId(), token);
+        return new LoginResponseDto(token);
     }
 
 

@@ -1,4 +1,4 @@
-package br.com.judev.usermanagement.entity;
+/*package br.com.judev.usermanagement.entity;
 
 
 import jakarta.persistence.*;
@@ -23,3 +23,4 @@ public class ProfileUserPK {
     @JoinColumn(name = "profile_id")
     private Profile profile;
 }
+*/
