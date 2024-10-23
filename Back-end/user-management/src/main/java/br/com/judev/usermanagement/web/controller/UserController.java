@@ -1,10 +1,13 @@
 package br.com.judev.usermanagement.web.controller;
 
+import br.com.judev.usermanagement.exception.EntityAlreadyExists;
 import br.com.judev.usermanagement.exception.EntityNotFoundException;
 import br.com.judev.usermanagement.exception.NameNotChangeException;
 import br.com.judev.usermanagement.service.UserService;
+import br.com.judev.usermanagement.web.dto.request.LoginRequestDto;
 import br.com.judev.usermanagement.web.dto.request.RegisterUserRequestDto;
 import br.com.judev.usermanagement.web.dto.request.UserRequestDto;
+import br.com.judev.usermanagement.web.dto.response.LoginResponseDto;
 import br.com.judev.usermanagement.web.dto.response.UserResponseDto;
 import br.com.judev.usermanagement.web.exception.ErrorMessage;
 import io.swagger.v3.oas.annotations.Operation;
@@ -12,6 +15,9 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -54,6 +60,7 @@ public class UserController {
     public UserResponseDto createUser(@RequestBody RegisterUserRequestDto userDto) {
         return userService.create(userDto);
     }*/
+
 
     @Operation(summary = "update a new user", description ="Feature to update a user",
             responses = {

@@ -6,6 +6,8 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -46,7 +48,6 @@ public class TokenService {
         }
     }
 
-
     // Método para validar um token JWT fornecido
     public String validateToken(String token) {
         if (token == null || token.trim().isEmpty()) {
@@ -68,4 +69,8 @@ public class TokenService {
     private Instant toExpireDateTime() {
         return LocalDateTime.now().plusMinutes(10).toInstant(ZoneOffset.ofHours(-3));
     }
+
+ /*   private Key getKey(){
+        return Keys.ahmacShakeyFor(secret);
+    }*/
 }

@@ -36,7 +36,6 @@ public class AuthController {
 
     private final UserRepository userRepository;
 
-
     @Operation(summary = "Create a new user", description ="Feature to create a new user",
             responses = {
                     @ApiResponse(responseCode = "201", description = "User creadet in successfully",
@@ -47,7 +46,7 @@ public class AuthController {
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
             })
     @ExceptionHandler(EntityAlreadyExists.class)
-    @PostMapping("/register")
+    @PostMapping("/")
     public ResponseEntity<String> register(@RequestBody @Valid RegisterUserRequestDto userDto) {
         userService.register(userDto);
         return new ResponseEntity<>("User registered successfully", HttpStatus.CREATED);
@@ -67,5 +66,4 @@ public class AuthController {
         LoginResponseDto response = userService.login(loginDto);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-
 }

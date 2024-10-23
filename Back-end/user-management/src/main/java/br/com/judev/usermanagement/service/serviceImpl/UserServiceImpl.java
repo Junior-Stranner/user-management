@@ -18,6 +18,7 @@ import br.com.judev.usermanagement.web.mapper.UserMapper;
 import br.com.judev.usermanagement.web.mapper.UserRegisterMapper;
 import br.com.judev.usermanagement.web.validators.UserValidator;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -31,7 +32,7 @@ import java.util.stream.StreamSupport;
 public class UserServiceImpl implements UserService {
 
     private final UserValidator validator;
-    private final PasswordEncoder passwordEncoder;
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(12);
     private final EmailService emailService;
     private final UserRepository userRepository;
     private final TokenService tokenService;

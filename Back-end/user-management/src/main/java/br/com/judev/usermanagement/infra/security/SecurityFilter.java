@@ -75,10 +75,14 @@ public class SecurityFilter extends OncePerRequestFilter {
             throw new RuntimeException("Authorization header missing or invalid");
         }*/
 
-        var authHeader = request.getHeader("Authorization");
+        String authHeader = request.getHeader("Authorization");
+        System.out.println("Authorization Header: " + authHeader); // Log para depuração
+
+        // Verifica se o cabeçalho é nulo ou não começa com "Bearer "
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             throw new RuntimeException("Authorization header missing or invalid");
         }
-        return authHeader.replace("Bearer ", "");
-       }
+        // Retorna o token, removendo "Bearer "
+        return authHeader.substring(7); // Ou authHeader.replace("Bearer ", "");
+    }
 }

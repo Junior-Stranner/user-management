@@ -72,13 +72,13 @@ public class User implements UserDetails {
     }
 
     @Override
-    public String getUsername() {
-        return cpfCnpj;
+    public String getPassword() {
+        return getPassword();
     }
 
     @Override
-    public boolean isAccountNonExpired() {
-        return true;
+    public String getUsername() {
+        return getUsername();
     }
 
     @Override
