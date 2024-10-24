@@ -2,6 +2,7 @@ package br.com.judev.usermanagement.web.controller;
 
 import br.com.judev.usermanagement.entity.User;
 import br.com.judev.usermanagement.exception.EntityAlreadyExists;
+import br.com.judev.usermanagement.infra.security.TokenService;
 import br.com.judev.usermanagement.repository.UserRepository;
 import br.com.judev.usermanagement.service.UserService;
 import br.com.judev.usermanagement.web.dto.PasswordRecoveryDto;
@@ -18,9 +19,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -32,27 +35,18 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final UserService userService;
 
-    private final UserRepository userRepository;
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
-    @Operation(summary = "Create a new user", description ="Feature to create a new user",
-            responses = {
-                    @ApiResponse(responseCode = "201", description = "User creadet in successfully",
-                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = RegisterUserRequestDto.class))),
-                    @ApiResponse(responseCode = "409", description = "User e-mail already exists on system",
-                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
-                    @ApiResponse(responseCode = "422", description = "Resource not processed due to invalid input data",
-                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
-            })
-    @ExceptionHandler(EntityAlreadyExists.class)
-    @PostMapping("/")
-    public ResponseEntity<String> register(@RequestBody @Valid RegisterUserRequestDto userDto) {
-        userService.register(userDto);
-        return new ResponseEntity<>("User registered successfully", HttpStatus.CREATED);
-    }
+    @Autowired
+    private UserService userService;
 
-    @Operation(summary = "Login a  user", description ="Feature to login user",
+    @Autowired
+    private TokenService tokenService;
+
+
+@Operation(summary = "Login a  user", description ="Feature to login user",
             responses = {
                     @ApiResponse(responseCode = "201", description = "User logged in successfully\n",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = RegisterUserRequestDto.class))),
@@ -63,7 +57,12 @@ public class AuthController {
             })
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDto> login(@RequestBody @Valid LoginRequestDto loginDto) {
+       // Chama o método do serviço para realizar o login
         LoginResponseDto response = userService.login(loginDto);
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
+
+       // Retorna a resposta com o token gerado
+       return new ResponseEntity<>(response, HttpStatus.OK);
+   }
+
+
 }

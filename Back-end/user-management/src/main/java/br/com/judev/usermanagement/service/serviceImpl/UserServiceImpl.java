@@ -47,7 +47,7 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public RegisterUserResponseDto register(RegisterUserRequestDto userDto) {
+    public RegisterUserResponseDto salvar(RegisterUserRequestDto userDto) {
         Optional<User> user = userRepository.findByEmailOrCpfCnpj(userDto.getEmail(), userDto.getCpfCnpj());
         if (user != null) {
             if (user.get().getEmail().equals(userDto.getEmail()))
@@ -59,9 +59,14 @@ public class UserServiceImpl implements UserService {
 
         User newUser = UserRegisterMapper.toUser(userDto);
         // Criptografa a senha na entidade antes de salvar
-        newUser.setPassword(passwordEncoder.encode(userDto.getPassword()));
+        var passwordHash = passwordEncoder.encode(userDto.getPassword());
+        newUser.setPassword(passwordHash);
+        //newUser.setPassword(passwordEncoder.encode(userDto.getPassword()));
         User savedUser = userRepository.save(newUser);
 
+         // Gera um token JWT para o novo usuário registrado
+        String token = this.tokenService.generateToken(newUser);
+        // Envia email de boas-vindas
         emailService.sendWelcomeMessageToNewUser(savedUser.getEmail(), savedUser.getName());
 
         return UserRegisterMapper.ToDto(savedUser);

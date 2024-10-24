@@ -1,15 +1,23 @@
 package br.com.judev.usermanagement.infra.security;
 
 import br.com.judev.usermanagement.entity.User;
+import br.com.judev.usermanagement.exception.EntityNotFoundException;
+import br.com.judev.usermanagement.repository.UserRepository;
+import br.com.judev.usermanagement.web.dto.request.LoginRequestDto;
+import br.com.judev.usermanagement.web.dto.response.LoginResponseDto;
+import br.com.judev.usermanagement.web.dto.response.TokenResponseDto;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -20,20 +28,27 @@ public class TokenService {
     @Value("${api.security.token.secret}")
     private String secret;
 
+    @Autowired
+    private UserRepository userRepository;
+
 
     // Método para gerar um token JWT com base no usuário fornecido
-    public String generateToken(User user){
+    public String generateToken(User user) {
         try {
-            Algorithm algorithm = Algorithm.HMAC256(secret);
-            return JWT.create()
+            Algorithm algorithm = Algorithm.HMAC256(secret); // Chave secreta para assinar o token
+            String token = JWT.create()
                     .withIssuer("auth-api") // Mude aqui para corresponder ao issuer do validateToken
                     .withSubject(user.getEmail())
                     .withExpiresAt(toExpireDateTime())
                     .sign(algorithm);
-        }catch (JWTCreationException exception){
+
+            return token; // Retorna o token gerado
+
+        } catch (JWTCreationException exception) {
             throw new RuntimeException("ERROR: Token was not generated", exception);
         }
     }
+
     public String generateTemporaryTokenToRecoveryPassword (User user) {
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);

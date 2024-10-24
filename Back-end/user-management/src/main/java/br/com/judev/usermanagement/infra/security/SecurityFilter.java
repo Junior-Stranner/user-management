@@ -1,5 +1,6 @@
 package br.com.judev.usermanagement.infra.security;
 
+import br.com.judev.usermanagement.exception.EntityNotFoundException;
 import br.com.judev.usermanagement.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -33,8 +34,9 @@ public class SecurityFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        String token = recoverToken(request);
+
         try {
-            String token = recoverToken(request);
             String login = tokenService.validateToken(token); // Valida o token e recupera o login
 
             if (login != null && SecurityContextHolder.getContext().getAuthentication() == null) {
@@ -50,8 +52,9 @@ public class SecurityFilter extends OncePerRequestFilter {
             }
         } catch (RuntimeException e) {
             // Define o status da resposta e escreve a mensagem de erro
+            response.setContentType("application/json");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("Unauthorized: " + e.getMessage());
+            response.getWriter().write("{\"error\": \"Unauthorized\", \"message\": \"" + e.getMessage() + "\"}");
             return; // Não continua a cadeia de filtros
         }
         // Continua o filtro chain
@@ -76,7 +79,7 @@ public class SecurityFilter extends OncePerRequestFilter {
         }*/
 
         String authHeader = request.getHeader("Authorization");
-        System.out.println("Authorization Header: " + authHeader); // Log para depuração
+        logger.warn("Authorization Header: {}" +authHeader);
 
         // Verifica se o cabeçalho é nulo ou não começa com "Bearer "
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {

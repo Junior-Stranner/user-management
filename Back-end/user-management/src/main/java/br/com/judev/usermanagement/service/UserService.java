@@ -13,7 +13,7 @@ import java.util.List;
 @Service
 public interface UserService {
 
-    public RegisterUserResponseDto register(RegisterUserRequestDto userDto);
+    public RegisterUserResponseDto salvar(RegisterUserRequestDto userDto);
     public LoginResponseDto login(LoginRequestDto loginDto);
     public List<UserResponseDto> listAll();
     public UserResponseDto update(Long userId, UserRequestDto userDto);
