@@ -3,7 +3,6 @@ package br.com.judev.usermanagement.web.dto.request;
 import br.com.judev.usermanagement.exception.CpfCnpj;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 

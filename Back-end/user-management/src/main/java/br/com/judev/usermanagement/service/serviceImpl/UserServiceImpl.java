@@ -18,8 +18,11 @@ import br.com.judev.usermanagement.web.mapper.UserMapper;
 import br.com.judev.usermanagement.web.mapper.UserRegisterMapper;
 import br.com.judev.usermanagement.web.validators.UserValidator;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -36,6 +39,9 @@ public class UserServiceImpl implements UserService {
     private final EmailService emailService;
     private final UserRepository userRepository;
     private final TokenService tokenService;
+
+    private final AuthenticationManager authenticationManager;
+
 
     @Override
     public List<UserResponseDto> listAll() {
@@ -56,12 +62,23 @@ public class UserServiceImpl implements UserService {
             if (user.get().getCpfCnpj().equals(userDto.getCpfCnpj()))
                 throw new EntityAlreadyExists("User with CPF/CNPJ " + userDto.getCpfCnpj() + " already exists.");
         }
-
+         
         User newUser = UserRegisterMapper.toUser(userDto);
-        // Criptografa a senha na entidade antes de salvar
-        var passwordHash = passwordEncoder.encode(userDto.getPassword());
-        newUser.setPassword(passwordHash);
+
+          // Criptografa a senha na entidade antes de salvar
+          String encryptedPassword = passwordEncoder.encode(userDto.getPassword());
+         
+       /*   User newUser = new User();
+          newUser.setEmail(userDto.getEmail());
+          newUser.setPassword(encryptedPassword);
+          newUser.setCpfCnpj(userDto.getCpfCnpj()); // Exemplo, se aplicável
+          newUser.setRole(userDto.getRole());*/
+
+     //     User newUser = new User(userDto.getEmail(), encryptedPassword, userDto.getRole(), userDto.getCpfCnpj());
+
+      
         //newUser.setPassword(passwordEncoder.encode(userDto.getPassword()));
+        newUser.setPassword(encryptedPassword);
         User savedUser = userRepository.save(newUser);
 
          // Gera um token JWT para o novo usuário registrado
@@ -77,11 +94,23 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByEmail(loginDto.getEmail())
                 .orElseThrow(() -> new EntityNotFoundException("User with email " + loginDto.getEmail() + " not found."));
         // Verifica se a senha está correta
-        if (!passwordEncoder.matches(loginDto.getPassword(), user.getPassword())) {
+       /*  if (!passwordEncoder.matches(loginDto.getPassword(), user.getPassword())) {
             throw new PasswordInvalidException("Invalid password for user with email " + loginDto.getEmail() + ".");
         }
         // Gera o token e retorna o DTO de resposta de login
-        String token = tokenService.generateToken(user);
+        String token = tokenService.generateToken(user);*/
+
+          // Cria o token de autenticação
+          UsernamePasswordAuthenticationToken authToken = 
+          new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword());
+
+          // Autentica o usuário
+          Authentication authentication = authenticationManager.authenticate(authToken);
+
+         // Gera o token após autenticação bem-sucedida
+          String token = tokenService.generateToken((User) authentication.getPrincipal());
+  
+            
         return new LoginResponseDto(token);
     }
 

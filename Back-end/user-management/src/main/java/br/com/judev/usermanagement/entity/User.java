@@ -38,12 +38,6 @@ public class User implements UserDetails {
     private UserRole role;
 
 
-    public void setRole(UserRole role) {
-        if (role == null) {
-            throw new IllegalArgumentException("Role cannot be null");
-        }
-        this.role = role;
-    }
 
     @Override
     public int hashCode() {
@@ -94,5 +88,10 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public void setRole(String role2) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setRole'");
     }
 }
