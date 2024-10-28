@@ -46,6 +46,23 @@ public class AuthController {
     private TokenService tokenService;
 
 
+    @Operation(summary = "Create a new user", description ="Feature to create a new user",
+            responses = {
+                    @ApiResponse(responseCode = "201", description = "User creadet in successfully",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = RegisterUserRequestDto.class))),
+                    @ApiResponse(responseCode = "409", description = "User e-mail already exists on system",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
+                    @ApiResponse(responseCode = "422", description = "Resource not processed due to invalid input data",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
+            })
+    @ExceptionHandler(EntityAlreadyExists.class)
+    @PostMapping("/register")
+    public ResponseEntity<String> register(@RequestBody @Valid RegisterUserRequestDto userDto) {
+        userService.salvar(userDto);
+        return new ResponseEntity<>("User registered successfully", HttpStatus.CREATED);
+    }
+
+
 @Operation(summary = "Login a  user", description ="Feature to login user",
             responses = {
                     @ApiResponse(responseCode = "201", description = "User logged in successfully\n",
