@@ -51,6 +51,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/v1/user").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/confirmCode").permitAll()
                         .anyRequest().authenticated()
+
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);
 
