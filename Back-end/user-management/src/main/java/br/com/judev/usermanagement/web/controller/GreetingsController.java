@@ -9,7 +9,7 @@ public class GreetingsController {
 
     @GetMapping("/hello")
     public String sayHello(){
-        return "hello";
+        return "hello Junior , welcome to your account ";
     }
 
     @PreAuthorize("hasRole('USER')")

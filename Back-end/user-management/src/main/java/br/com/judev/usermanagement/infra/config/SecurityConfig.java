@@ -8,6 +8,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -32,7 +33,7 @@ import javax.sql.DataSource;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private SecurityFilter securityFilter;
+   private SecurityFilter securityFilter;
 
     @Autowired
     private UserDetailsService userDetailsService;
@@ -41,6 +42,24 @@ public class SecurityConfig {
     DataSource dataSource;
 
     @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+                // Desabilita proteção CSRF (apenas se não for necessária)
+                .csrf(csrf -> csrf.disable())
+
+                // Configura autorização de requisições
+                .authorizeHttpRequests(auth -> auth
+                        .anyRequest().authenticated() // Exige autenticação para todas as requisições
+                )
+
+                // Configura login via OAuth2
+                .oauth2Login(Customizer.withDefaults());
+
+        return http.build();
+    }
+
+
+  /*  @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, SecurityFilter securityFilter) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
@@ -56,7 +75,8 @@ public class SecurityConfig {
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
-    }
+
+    }*/
 
     /*1. Autenticação em Memória:
    @Bean
