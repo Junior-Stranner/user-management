@@ -7,6 +7,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -26,11 +28,12 @@ public class SecurityFilter extends OncePerRequestFilter {
     @Autowired
     private TokenService tokenService;
 
-    @Autowired
-    private UserRepository userRepository;
+  /*  @Autowired
+    private UserRepository userRepository;*/
 
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
+
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {

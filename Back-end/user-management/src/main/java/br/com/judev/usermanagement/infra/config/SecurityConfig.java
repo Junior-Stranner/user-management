@@ -33,13 +33,18 @@ import javax.sql.DataSource;
 @EnableWebSecurity
 public class SecurityConfig {
 
-   private SecurityFilter securityFilter;
+   private final SecurityFilter securityFilter;
 
-    @Autowired
+     @Autowired
     private UserDetailsService userDetailsService;
 
-   @Autowired
-    DataSource dataSource;
+
+    public SecurityConfig(SecurityFilter securityFilter) {
+        this.securityFilter = securityFilter;
+    }
+
+    /*   @Autowired
+    DataSource dataSource;*/
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
