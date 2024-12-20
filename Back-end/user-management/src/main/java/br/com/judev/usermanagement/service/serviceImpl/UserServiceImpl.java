@@ -77,13 +77,13 @@ public class UserServiceImpl implements UserService {
 
      //     User newUser = new User(userDto.getEmail(), encryptedPassword, userDto.getRole(), userDto.getCpfCnpj());
 
-      
         //newUser.setPassword(passwordEncoder.encode(userDto.getPassword()));
         newUser.setPassword(encryptedPassword);
         User savedUser = userRepository.save(newUser);
 
          // Gera um token JWT para o novo usuário registrado
         String token = this.tokenService.generateToken(newUser);
+
         // Envia email de boas-vindas
         emailService.sendWelcomeMessageToNewUser(savedUser.getEmail(), savedUser.getName());
 
@@ -92,28 +92,29 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public LoginResponseDto login(LoginRequestDto loginDto) {
+        // Valida se o DTO possui as informações necessárias
+        if (loginDto.getEmail() == null || loginDto.getPassword() == null) {
+            throw new IllegalArgumentException("Email and password must be provided.");
+        }
+
+        // Recupera o usuário pelo e-mail
         User user = userRepository.findByEmail(loginDto.getEmail())
                 .orElseThrow(() -> new EntityNotFoundException("User with email " + loginDto.getEmail() + " not found."));
-        // Verifica se a senha está correta
-       /*  if (!passwordEncoder.matches(loginDto.getPassword(), user.getPassword())) {
-            throw new PasswordInvalidException("Invalid password for user with email " + loginDto.getEmail() + ".");
-        }
-        // Gera o token e retorna o DTO de resposta de login
-        String token = tokenService.generateToken(user);*/
 
-          // Cria o token de autenticação
-          UsernamePasswordAuthenticationToken authToken = 
-          new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword());
+        // Cria o token de autenticação
+        UsernamePasswordAuthenticationToken authToken =
+                new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword());
 
-          // Autentica o usuário
-          Authentication authentication = authenticationManager.authenticate(authToken);
+        // Autentica o usuário e verifica as credenciais
+        Authentication authentication = authenticationManager.authenticate(authToken);
 
-         // Gera o token após autenticação bem-sucedida
-          String token = tokenService.generateToken((User) authentication.getPrincipal());
-  
-            
+        // Gera o token JWT para o usuário autenticado
+        String token = tokenService.generateToken((User) authentication.getPrincipal());
+
+        // Retorna o token no DTO de resposta
         return new LoginResponseDto(token);
     }
+
 
 
     @Override
@@ -140,16 +141,32 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDto updatePassword(Long userId, String currentPassword, String newPassword, String confirmPassword) {
-        if(!newPassword.equals(confirmPassword)){
+        // Primeiro, busca o usuário
+        UserResponseDto user = getUserById(userId);
+
+
+        // Valida se a nova senha e a confirmação são iguais
+        if (!newPassword.equals(confirmPassword)) {
             throw new PasswordInvalidException("New password does not match password confirmation.");
         }
-        UserResponseDto user = getUserById(userId);
-        if(!passwordEncoder.matches(currentPassword, user.getPassword())){
-            throw new PasswordInvalidException("Your password does not match.");
+
+        // Verifica se a nova senha é diferente da atual
+        if (newPassword.equals(currentPassword)) {
+            throw new PasswordInvalidException("New password must be different from current password");
         }
-        user.setPassword(passwordEncoder.encode(newPassword)); // Atualiza a senha do usuário
+
+        // Valida se a senha atual está correta
+        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+            throw new PasswordInvalidException("Current password is incorrect");
+        }
+
+        //Atualiza a senha
+        user.setPassword(passwordEncoder.encode(newPassword));
+
         return user;
     }
+
+
 
     @Override
     public void delete(Long userId) {
