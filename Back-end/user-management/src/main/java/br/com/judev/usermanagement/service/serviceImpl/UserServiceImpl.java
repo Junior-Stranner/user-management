@@ -54,14 +54,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public RegisterUserResponseDto salvar(RegisterUserRequestDto userDto) {
-        Optional<User> user = userRepository.findByEmailOrCpfCnpj(userDto.getEmail(), userDto.getCpfCnpj());
-        if (user != null) {
-            if (user.get().getEmail().equals(userDto.getEmail()))
-                throw new EntityAlreadyExists("User with email " + userDto.getEmail() + " already exists.");
-
-            if (user.get().getCpfCnpj().equals(userDto.getCpfCnpj()))
-                throw new EntityAlreadyExists("User with CPF/CNPJ " + userDto.getCpfCnpj() + " already exists.");
-        }
+        userRepository.findByEmailOrCpfCnpj(userDto.getEmail(), userDto.getCpfCnpj())
+                .ifPresent(existingUser -> {
+                    if (existingUser.getEmail().equals(userDto.getEmail())) {
+                        throw new EntityAlreadyExists("User with email " + userDto.getEmail() + " already exists.");
+                    }
+                    if (existingUser.getCpfCnpj().equals(userDto.getCpfCnpj())) {
+                        throw new EntityAlreadyExists("User with CPF/CNPJ " + userDto.getCpfCnpj() + " already exists.");
+                    }
+                });
          
         User newUser = UserRegisterMapper.toUser(userDto);
 
