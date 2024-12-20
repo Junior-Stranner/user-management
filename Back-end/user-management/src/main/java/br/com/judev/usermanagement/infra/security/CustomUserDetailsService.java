@@ -30,6 +30,9 @@ public class CustomUserDetailsService implements UserDetailsService {
         User user = userRepository.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not Found"));
         return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), new ArrayList<>());
+
+         //authorities // Aqui você passa os roles como GrantedAuthority
+        //new ArrayList<>() representa que o usuário não tem permissões associadas.
     }*/
 
   /*  @Override

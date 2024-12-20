@@ -14,8 +14,18 @@ public class CorsConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:3000") // URL do seu aplicativo React
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH")
-                .allowedHeaders("*");
+                .allowedOrigins(allowedOrigins)
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
+                .allowedHeaders("Authorization", "Content-Type", "X-Requested-With")
+                .allowCredentials(true)
+                .maxAge(3600); // 1 hora de cache para pre-flight requests
     }
 }
+/*CorsConfig:
+
+Valor padrão para allowedOrigins caso não exista no properties
+Adição do método OPTIONS explicitamente
+Headers específicos ao invés de wildcard (*)
+Configuração de maxAge para otimizar pre-flight requests
+allowCredentials para suportar cookies/autenticação
+Headers mais específicos e seguros*/

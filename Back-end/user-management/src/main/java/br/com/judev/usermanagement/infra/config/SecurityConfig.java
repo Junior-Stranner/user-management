@@ -1,10 +1,14 @@
 package br.com.judev.usermanagement.infra.config;
 
 import br.com.judev.usermanagement.infra.security.SecurityFilter;
+import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.CustomAutowireConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -23,7 +27,10 @@ import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 
@@ -46,42 +53,106 @@ public class SecurityConfig {
     /*   @Autowired
     DataSource dataSource;*/
 
+ /*   private static final String[] PERMIT_ALL= {
+            "/swagger-ui/**",
+            "/v3/api-docs/**",
+            "/swagger-ui.html",
+            "/h2-console/**"
+    };*/
+
+    private static final String[] PUBLIC_PATHS = {
+            "/swagger-ui/**",
+            "/v3/api-docs/**",
+            "/swagger-ui.html",
+            "/h2-console/**"
+    };
+
+    private static final String[] AUTH_PATHS = {
+            "/auth/login",
+            "/auth/register",
+            "/auth/confirm-code"
+    };
+
+    /*@Bean
+public SecurityFilterChain securityFilterChain(HttpSecurity http, SecurityFilter securityFilter) throws Exception {
+    http
+            .csrf(csrf -> csrf.disable())
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(auth -> auth
+                    .requestMatchers(PERMIT_ALL).permitAll()
+                    .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/v1/user").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/auth/confirmCode").permitAll()
+                    .anyRequest().authenticated()
+            )
+            .exceptionHandling(ex -> ex
+                    .authenticationEntryPoint(authenticationEntryPoint())
+                    .accessDeniedHandler(accessDeniedHandler()))
+            )
+            .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);
+    return http.build();
+
+}*/
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                // Desabilita proteção CSRF (apenas se não for necessária)
+        return http
+                // Desabilita CSRF pois usaremos tokens JWT
                 .csrf(csrf -> csrf.disable())
 
-                // Configura autorização de requisições
+                // Configura CORS
+            //    .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+
+                // Configura sessão como STATELESS (sem estado)
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+                // Configura headers de segurança
+                .headers(headers -> headers
+                        .frameOptions(frame -> frame.sameOrigin()) // Permite H2 Console
+                        .xssProtection(xss -> xss.disable()))       // Proteção contra XSS
+
+                // Configura autorizações de requests
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().authenticated() // Exige autenticação para todas as requisições
+                        .requestMatchers(PUBLIC_PATHS).permitAll()
+                        .requestMatchers(HttpMethod.POST, AUTH_PATHS).permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/user").permitAll()
+                        .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
+                        .anyRequest().authenticated())
+
+                // Configura tratamento de exceções
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
                 )
+                // Adiciona filtro JWT
+                .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
+                .build();
+    }
 
-                // Configura login via OAuth2
-                .oauth2Login(Customizer.withDefaults());
-
-        return http.build();
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
 
-  /*  @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, SecurityFilter securityFilter) throws Exception {
-        http
-                .csrf(csrf -> csrf.disable())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/user").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/auth/confirmCode").permitAll()
-                        .anyRequest().authenticated()
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
 
-                )
-                .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);
+    @Bean
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
+    }
+    @Bean
+    public AuthenticationEntryPoint authenticationEntryPoint() {
+        return (request, response, authException) -> {
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        };
+    }
 
-        return http.build();
-
-    }*/
 
     /*1. Autenticação em Memória:
    @Bean
@@ -133,15 +204,7 @@ public UserDetailsService userDetailsService() {
     //EM Memória
     return new InMemoryUserDetailsManager(user1, admin);*/
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
 
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
-    }
 
  /*   @Bean
     public AuthenticationProvider authenticationProvider() {
@@ -152,8 +215,5 @@ public UserDetailsService userDetailsService() {
         return provider;
     }*/
 
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
-     }
 
 }
