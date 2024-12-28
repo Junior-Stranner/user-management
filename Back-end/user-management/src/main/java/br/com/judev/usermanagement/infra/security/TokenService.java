@@ -8,6 +8,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -16,31 +17,26 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
+
 @Service
 public class TokenService {
 
-    @Value("${api.security.token.secret}")
+    @Value("${security.token}")
     private String secret;
 
-    @Autowired
-    private UserRepository userRepository;
 
-
-    private static final String ISSUER = "auth-api";
-
+    private static final String ISSUER = "user-management";
 
     // Método para gerar um token JWT com base no usuário fornecido
     public String generateToken(User user) {
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret); // Chave secreta para assinar o token
             String token = JWT.create()
-                    .withIssuer("auth-api") // Mude aqui para corresponder ao issuer do validateToken
+                    .withIssuer(ISSUER) // Mude aqui para corresponder ao issuer do validateToken
                     .withSubject(user.getEmail())
-                    .withExpiresAt(toExpireDateTime())
+                    .withExpiresAt(genExpirationDate())
                     .sign(algorithm);
-
             return token; // Retorna o token gerado
-
         } catch (JWTCreationException exception) {
             throw new RuntimeException("ERROR: Token was not generated", exception);
         }
@@ -77,10 +73,7 @@ public class TokenService {
         }
     }
 
-    // Método para gerar a data de expiração do token (10 minutos a partir do momento atual)
-    private Instant toExpireDateTime() {
-        return LocalDateTime.now().plusMinutes(10).toInstant(ZoneOffset.ofHours(-3));
+    private Instant genExpirationDate(){
+        return LocalDateTime.now().plusHours(2).toInstant(ZoneOffset.of("-03:00"));
     }
-
-
 }

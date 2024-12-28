@@ -1,54 +1,39 @@
 package br.com.judev.usermanagement.infra.config;
 
 import br.com.judev.usermanagement.infra.security.SecurityFilter;
-import net.minidev.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.CustomAutowireConfigurer;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
+
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
-import org.springframework.security.provisioning.JdbcUserDetailsManager;
-import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-
-import javax.sql.DataSource;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-   private final SecurityFilter securityFilter;
-
-     @Autowired
-    private UserDetailsService userDetailsService;
+    private final SecurityFilter securityFilter;
+ //   private final UserDetailsService userDetailsService;
+ //   private final PasswordEncoder passwordEncoder;
+ //   private final AuthenticationProvider authenticationProvider;
 
 
     public SecurityConfig(SecurityFilter securityFilter) {
         this.securityFilter = securityFilter;
+   //     this.authenticationProvider = authenticationProvider;
     }
+
 
     /*   @Autowired
     DataSource dataSource;*/
@@ -107,6 +92,7 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http, SecurityFilter
                 // Configura sessão como STATELESS (sem estado)
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+          //      .authenticationProvider(authenticationProvider)
 
                 // Configura headers de segurança
                 .headers(headers -> headers
@@ -116,9 +102,9 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http, SecurityFilter
                 // Configura autorizações de requests
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(PUBLIC_PATHS).permitAll()
+                        .requestMatchers("/auth/**", "/auth/register", "/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, AUTH_PATHS).permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/user").permitAll()
-                        .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
+                        //.requestMatchers("/auth").permitAll()
                         .anyRequest().authenticated())
 
                 // Configura tratamento de exceções
@@ -141,17 +127,17 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http, SecurityFilter
         return authenticationConfiguration.getAuthenticationManager();
     }
 
-    @Bean
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
+/*    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
     }
+
     @Bean
     public AuthenticationEntryPoint authenticationEntryPoint() {
         return (request, response, authException) -> {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         };
-    }
+    }*/
 
 
     /*1. Autenticação em Memória:

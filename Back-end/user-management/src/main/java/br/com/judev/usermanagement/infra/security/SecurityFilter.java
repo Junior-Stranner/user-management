@@ -1,14 +1,10 @@
 package br.com.judev.usermanagement.infra.security;
 
-import br.com.judev.usermanagement.exception.EntityNotFoundException;
-import br.com.judev.usermanagement.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -20,6 +16,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Collections;
+
 
 @Component
 @RequiredArgsConstructor
@@ -71,7 +68,7 @@ public class SecurityFilter extends OncePerRequestFilter {
      * @return O token JWT, ou null se o cabeçalho Authorization não estiver presente.
      */
     // Método para recuperar o token do cabeçalho Authorization
-    private String recoverToken(HttpServletRequest request) {
+ /*   private String recoverToken(HttpServletRequest request) {
        /* String authorizationHeader = request.getHeader("Authorization");
         System.out.println("Authorization Header: " + authorizationHeader);
 
@@ -79,16 +76,25 @@ public class SecurityFilter extends OncePerRequestFilter {
             return authorizationHeader.substring(7);
         } else {
             throw new RuntimeException("Authorization header missing or invalid");
-        }*/
+        }
 
-        String authHeader = request.getHeader("Authorization");
-        logger.warn("Authorization Header: {}" +authHeader);
-
-        // Verifica se o cabeçalho é nulo ou não começa com "Bearer "
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        String authorizationHeader = request.getHeader("Authorization");
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
             throw new RuntimeException("Authorization header missing or invalid");
         }
-        // Retorna o token, removendo "Bearer "
-        return authHeader.substring(7); // Ou authHeader.replace("Bearer ", "");
+        String token = authorizationHeader.substring(7); // Remove "Bearer "
+
+        return token;
+    }*/
+
+    private String recoverToken(HttpServletRequest request){
+        var authHeader = request.getHeader("Authorization");
+
+        // Se o cabeçalho de autorização estiver ausente, retorna null
+        if(authHeader == null) return null;
+
+        // Remove a parte "Bearer " do valor do cabeçalho de autorização e retorna o token JWT
+        return authHeader.replace("Bearer ", "");
     }
+
 }

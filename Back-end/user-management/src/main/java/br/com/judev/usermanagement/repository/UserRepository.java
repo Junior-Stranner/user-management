@@ -12,4 +12,6 @@ public interface UserRepository extends JpaRepository<User , Long> {
 
     @Query("SELECT u FROM User u WHERE u.email = :email OR u.cpfCnpj = :cpfCnpj")
     Optional<User> findByEmailOrCpfCnpj(String email , String cpfCnpj);
+
+  //  Optional<User> finByVerificationCode(String verificationCodde);
 }

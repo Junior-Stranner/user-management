@@ -26,7 +26,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -66,40 +65,36 @@ public class UserServiceImpl implements UserService {
          
         User newUser = UserRegisterMapper.toUser(userDto);
 
-          // Criptografa a senha na entidade antes de salvar
-          String encryptedPassword = passwordEncoder.encode(userDto.getPassword());
-         
-       /*   User newUser = new User();
-          newUser.setEmail(userDto.getEmail());
-          newUser.setPassword(encryptedPassword);
-          newUser.setCpfCnpj(userDto.getCpfCnpj()); // Exemplo, se aplicável
-          newUser.setRole(userDto.getRole());*/
-
-     //     User newUser = new User(userDto.getEmail(), encryptedPassword, userDto.getRole(), userDto.getCpfCnpj());
-
-        //newUser.setPassword(passwordEncoder.encode(userDto.getPassword()));
+        // Criptografa a senha na entidade antes de salvar
+        String encryptedPassword = passwordEncoder.encode(userDto.getPassword());
         newUser.setPassword(encryptedPassword);
+
         User savedUser = userRepository.save(newUser);
 
          // Gera um token JWT para o novo usuário registrado
         String token = this.tokenService.generateToken(newUser);
 
         // Envia email de boas-vindas
-        emailService.sendWelcomeMessageToNewUser(savedUser.getEmail(), savedUser.getName());
+    //    emailService.sendWelcomeMessageToNewUser(savedUser.getEmail(), savedUser.getName());
 
         return UserRegisterMapper.ToDto(savedUser);
     }
 
     @Override
     public LoginResponseDto login(LoginRequestDto loginDto) {
-        // Valida se o DTO possui as informações necessárias
-        if (loginDto.getEmail() == null || loginDto.getPassword() == null) {
-            throw new IllegalArgumentException("Email and password must be provided.");
+
+        if ((loginDto.getEmail() == null || loginDto.getEmail().isBlank()) &&
+                (loginDto.getCpfCnpj() == null || loginDto.getCpfCnpj().isBlank())) {
+            throw new IllegalArgumentException("Either email or cpfCnpj must be provided.");
         }
 
-        // Recupera o usuário pelo e-mail
-        User user = userRepository.findByEmail(loginDto.getEmail())
-                .orElseThrow(() -> new EntityNotFoundException("User with email " + loginDto.getEmail() + " not found."));
+        if (loginDto.getEmail() != null && !loginDto.getEmail().isBlank()) {
+             userRepository.findByEmail(loginDto.getEmail())
+                    .orElseThrow(() -> new EntityNotFoundException("User with email " + loginDto.getEmail() + " not found."));
+        } else {
+             userRepository.findByCpfCnpj(loginDto.getCpfCnpj())
+                    .orElseThrow(() -> new EntityNotFoundException("User with cpfCnpj " + loginDto.getCpfCnpj() + " not found."));
+        }
 
         // Cria o token de autenticação
         UsernamePasswordAuthenticationToken authToken =
@@ -111,10 +106,8 @@ public class UserServiceImpl implements UserService {
         // Gera o token JWT para o usuário autenticado
         String token = tokenService.generateToken((User) authentication.getPrincipal());
 
-        // Retorna o token no DTO de resposta
         return new LoginResponseDto(token);
     }
-
 
 
     @Override
@@ -124,7 +117,7 @@ public class UserServiceImpl implements UserService {
                 () -> new EntityNotFoundException("User not found with id: " + userId));
 
         if (!entity.getCpfCnpj().equals(userDto.getCpfCnpj())) {
-            throw new EntityNotFoundException("ENTITY NOT FOUND");
+            throw new IllegalArgumentException("Invalid CPF/CNPJ for user with id: " + userId);
         }
 
         if (userDto.getName() != null) {
@@ -141,7 +134,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDto updatePassword(Long userId, String currentPassword, String newPassword, String confirmPassword) {
-        // Primeiro, busca o usuário
         UserResponseDto user = getUserById(userId);
 
 
@@ -160,12 +152,10 @@ public class UserServiceImpl implements UserService {
             throw new PasswordInvalidException("Current password is incorrect");
         }
 
-        //Atualiza a senha
         user.setPassword(passwordEncoder.encode(newPassword));
 
         return user;
     }
-
 
 
     @Override

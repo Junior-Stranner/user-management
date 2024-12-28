@@ -1,10 +1,7 @@
 package br.com.judev.usermanagement.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,7 +13,7 @@ import java.util.Objects;
 @Entity
 @Table(name ="tb_user")
 @Getter@Setter
-@AllArgsConstructor@NoArgsConstructor
+@EqualsAndHashCode(of ="id")
 public class User implements UserDetails {
 
     @Id
@@ -26,7 +23,7 @@ public class User implements UserDetails {
     @Column(nullable = false, length = 200)
     private String name;
 
-    @Column(unique = true, nullable = false)
+    @Column(unique = true, nullable = false, length = 11)
     private String cpfCnpj;
 
     @Column(nullable = false, length = 100)
@@ -35,9 +32,19 @@ public class User implements UserDetails {
     @Column(nullable = false, length = 150, unique = true)
     private String email;
 
+    @Enumerated(EnumType.STRING)
     private UserRole role;
 
+    public User(String name, String cpfCnpj, String password, String email) {
+        this.name = name;
+        this.cpfCnpj = cpfCnpj;
+        this.password = password;
+        this.email = email;
+    }
 
+    public User() {
+
+    }
 
     @Override
     public int hashCode() {

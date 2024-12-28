@@ -25,7 +25,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         this.userRepository = userRepository;
     }
 
-  /*  @Override
+    @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not Found"));
@@ -33,9 +33,9 @@ public class CustomUserDetailsService implements UserDetailsService {
 
          //authorities // Aqui você passa os roles como GrantedAuthority
         //new ArrayList<>() representa que o usuário não tem permissões associadas.
-    }*/
+    }
 
-  /*  @Override
+  /*   @Override
     public UserDetails loadUserByUsername(String identifier) throws UsernameNotFoundException {
         User user = userRepository.findByEmailOrCpfCnpj(identifier, identifier)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com identificador: " + identifier));
@@ -50,9 +50,9 @@ public class CustomUserDetailsService implements UserDetailsService {
                         .map(role -> new SimpleGrantedAuthority(role.getName()))
                         .collect(Collectors.toList())
         );
-    }*/
+    }
 
-    @Override
+   @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com o email: " + username));
@@ -67,6 +67,6 @@ public class CustomUserDetailsService implements UserDetailsService {
                 true,  // conta não bloqueada
                 List.of() // Lista de permissões vazia
         );
-    }
+    }*/
 
 }

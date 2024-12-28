@@ -21,6 +21,7 @@ public class RegisterUserRequestDto {
     private String name;
 
     @NotBlank(message = "CPF/CNPJ cannot be null")
+    @Size(min = 11, max = 12)
     @CpfCnpj
     String cpfCnpj;
 
