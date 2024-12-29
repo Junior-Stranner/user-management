@@ -1,13 +1,15 @@
 package br.com.judev.usermanagement.infra.security;
 
+import br.com.judev.usermanagement.exception.InvalidTokenException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -15,8 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Collections;
-
+import java.util.Collection;
 
 @Component
 @RequiredArgsConstructor
@@ -25,39 +26,43 @@ public class SecurityFilter extends OncePerRequestFilter {
     @Autowired
     private TokenService tokenService;
 
-  /*  @Autowired
-    private UserRepository userRepository;*/
-
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
 
-
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(
+            @NonNull HttpServletRequest request,
+            @NonNull HttpServletResponse response,
+            @NonNull FilterChain filterChain) throws ServletException, IOException {
         String token = recoverToken(request);
 
         try {
-            String login = tokenService.validateToken(token); // Valida o token e recupera o login
+            // Valida o token e recupera o login (subject)
+            if (token != null) {
+                String login = tokenService.validateToken(token);
 
-            if (login != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                // Recupera os detalhes do usuário a partir do login
-                UserDetails userDetails = customUserDetailsService.loadUserByUsername(login);
-                var authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
+                // Verifica se o usuário está autenticado e define o contexto de segurança
+                if (login != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                    UserDetails userDetails = customUserDetailsService.loadUserByUsername(login);
+                    Collection<? extends GrantedAuthority> authorities = userDetails.getAuthorities();
 
-                // Cria um objeto de autenticação e define no contexto de segurança
-                var authentication = new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                    // Cria o objeto de autenticação e define no contexto de segurança
+                    var authentication = new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
+                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
             }
-        } catch (RuntimeException e) {
-            // Define o status da resposta e escreve a mensagem de erro
-            response.setContentType("application/json");
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("{\"error\": \"Unauthorized\", \"message\": \"" + e.getMessage() + "\"}");
-            return; // Não continua a cadeia de filtros
+        } catch (InvalidTokenException e) {
+            // Se o token for inválido, retorna erro 401 com a mensagem apropriada
+            writeErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Invalid token", e.getMessage());
+            return; // Interrompe a cadeia de filtros
+        } catch (Exception e) {
+            // Tratar outros erros inesperados
+            writeErrorResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Unexpected error", e.getMessage());
+            return;
         }
-        // Continua o filtro chain
+
+        // Continua a cadeia de filtros caso não haja erro
         filterChain.doFilter(request, response);
     }
 
@@ -67,34 +72,32 @@ public class SecurityFilter extends OncePerRequestFilter {
      * @param request A requisição HTTP.
      * @return O token JWT, ou null se o cabeçalho Authorization não estiver presente.
      */
-    // Método para recuperar o token do cabeçalho Authorization
- /*   private String recoverToken(HttpServletRequest request) {
-       /* String authorizationHeader = request.getHeader("Authorization");
-        System.out.println("Authorization Header: " + authorizationHeader);
+    private String recoverToken(HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
 
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            return authorizationHeader.substring(7);
-        } else {
-            throw new RuntimeException("Authorization header missing or invalid");
+        // Verifica se o cabeçalho Authorization está presente e começa com "Bearer "
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return null;
         }
 
-        String authorizationHeader = request.getHeader("Authorization");
-        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-            throw new RuntimeException("Authorization header missing or invalid");
-        }
-        String token = authorizationHeader.substring(7); // Remove "Bearer "
+        // Remove o prefixo "Bearer " e retorna o token
+        return authHeader.substring(7);
+    }
 
-        return token;
-    }*/
-
-    private String recoverToken(HttpServletRequest request){
-        var authHeader = request.getHeader("Authorization");
-
-        // Se o cabeçalho de autorização estiver ausente, retorna null
-        if(authHeader == null) return null;
-
-        // Remove a parte "Bearer " do valor do cabeçalho de autorização e retorna o token JWT
-        return authHeader.replace("Bearer ", "");
+    /**
+     * Escreve uma resposta de erro no formato JSON.
+     *
+     * @param response O objeto HttpServletResponse.
+     * @param status   O status HTTP.
+     * @param error    Uma breve descrição do erro.
+     * @param message  A mensagem detalhada do erro.
+     * @throws IOException Caso ocorra um erro ao escrever a resposta.
+     */
+    private void writeErrorResponse(HttpServletResponse response, int status, String error, String message) throws IOException {
+        response.setContentType("application/json");
+        response.setStatus(status);
+        String jsonResponse = String.format("{\"error\": \"%s\", \"message\": \"%s\"}", error, message);
+        response.getWriter().write(jsonResponse);
     }
 
 }

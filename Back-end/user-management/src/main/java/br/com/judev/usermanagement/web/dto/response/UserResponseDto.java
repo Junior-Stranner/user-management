@@ -1,6 +1,7 @@
 package br.com.judev.usermanagement.web.dto.response;
 
 import br.com.judev.usermanagement.exception.CpfCnpj;
+import br.com.judev.usermanagement.web.dto.UserChangePasswordDto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -12,7 +13,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class UserResponseDto {
+public class UserResponseDto{
 
     private Long userId;
     private String name;

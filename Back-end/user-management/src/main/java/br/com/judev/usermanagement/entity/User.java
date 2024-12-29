@@ -12,7 +12,8 @@ import java.util.Objects;
 
 @Entity
 @Table(name ="tb_user")
-@Getter@Setter
+@Getter
+@Setter
 @EqualsAndHashCode(of ="id")
 public class User implements UserDetails {
 
@@ -46,6 +47,10 @@ public class User implements UserDetails {
 
     }
 
+    public void setRole(UserRole role) {
+        this.role = role;
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(id);
@@ -74,12 +79,12 @@ public class User implements UserDetails {
 
     @Override
     public String getPassword() {
-        return getPassword();
+        return this.password; // Corrigido: agora retorna o valor correto.
     }
 
     @Override
     public String getUsername() {
-        return getUsername();
+        return this.email; // Corrigido: agora retorna o email como nome de usuário.
     }
 
     @Override
@@ -95,10 +100,5 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
-    }
-
-    public void setRole(String role2) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setRole'");
     }
 }

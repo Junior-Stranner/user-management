@@ -102,8 +102,8 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http, SecurityFilter
                 // Configura autorizações de requests
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(PUBLIC_PATHS).permitAll()
-                        .requestMatchers("/auth/**", "/auth/register", "/auth/login").permitAll()
-                        .requestMatchers(HttpMethod.POST, AUTH_PATHS).permitAll()
+                        .requestMatchers(HttpMethod.POST,"/auth/**", "/auth/register", "/auth/login").permitAll()
+                     //   .requestMatchers(HttpMethod.POST, AUTH_PATHS).permitAll()
                         //.requestMatchers("/auth").permitAll()
                         .anyRequest().authenticated())
 

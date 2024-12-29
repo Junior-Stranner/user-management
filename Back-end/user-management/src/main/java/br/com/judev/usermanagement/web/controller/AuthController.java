@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("auth")
 @RequiredArgsConstructor
 public class AuthController {
 
@@ -66,10 +66,8 @@ public class AuthController {
             })
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDto> login(@RequestBody @Valid LoginRequestDto loginDto) {
-       // Chama o método do serviço para realizar o login
         LoginResponseDto response = userService.login(loginDto);
 
-       // Retorna a resposta com o token gerado
        return new ResponseEntity<>(response, HttpStatus.OK);
    }
 }

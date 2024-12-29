@@ -4,10 +4,12 @@ import br.com.judev.usermanagement.entity.User;
 import br.com.judev.usermanagement.exception.EntityAlreadyExists;
 import br.com.judev.usermanagement.exception.EntityNotFoundException;
 import br.com.judev.usermanagement.exception.PasswordInvalidException;
+import br.com.judev.usermanagement.exception.ResourceNotFoundException;
 import br.com.judev.usermanagement.infra.security.TokenService;
 import br.com.judev.usermanagement.repository.UserRepository;
 import br.com.judev.usermanagement.service.EmailService;
 import br.com.judev.usermanagement.service.UserService;
+import br.com.judev.usermanagement.web.dto.UserChangePasswordDto;
 import br.com.judev.usermanagement.web.dto.request.LoginRequestDto;
 import br.com.judev.usermanagement.web.dto.request.RegisterUserRequestDto;
 import br.com.judev.usermanagement.web.dto.request.UserRequestDto;
@@ -50,6 +52,11 @@ public class UserServiceImpl implements UserService {
         return UserMapper.toListDto(users);
     }
 
+    @Override
+    public UserResponseDto getUserByEmail(String email) {
+       var user =  userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("Email not fount !"));
+        return UserMapper.ToDto(user);
+    }
 
     @Override
     public RegisterUserResponseDto salvar(RegisterUserRequestDto userDto) {
@@ -133,30 +140,30 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponseDto updatePassword(Long userId, String currentPassword, String newPassword, String confirmPassword) {
-        UserResponseDto user = getUserById(userId);
+    public UserChangePasswordDto updatePassword(Long userId, String currentPassword, String newPassword, String confirmPassword) {
+        var user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User with ID " + userId + " not found."));
 
-
-        // Valida se a nova senha e a confirmação são iguais
+        // Verifica se a nova senha e a confirmação são iguais
         if (!newPassword.equals(confirmPassword)) {
-            throw new PasswordInvalidException("New password does not match password confirmation.");
+            throw new PasswordInvalidException("New password does not match confirmation password.");
         }
 
-        // Verifica se a nova senha é diferente da atual
-        if (newPassword.equals(currentPassword)) {
-            throw new PasswordInvalidException("New password must be different from current password");
+        // Verifica se a nova senha é diferente da senha atual
+        if (passwordEncoder.matches(newPassword, user.getPassword())) {
+            throw new PasswordInvalidException("New password must be different from the current password.");
         }
 
         // Valida se a senha atual está correta
         if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
-            throw new PasswordInvalidException("Current password is incorrect");
+            throw new PasswordInvalidException("Current password is incorrect.");
         }
 
         user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
 
-        return user;
+        return new UserChangePasswordDto(currentPassword, newPassword, confirmPassword);
     }
-
 
     @Override
     public void delete(Long userId) {
@@ -165,7 +172,6 @@ public class UserServiceImpl implements UserService {
         }
         userRepository.deleteById(userId);
     }
-
 
     @Override
     public UserResponseDto getUserById(Long userId) {
