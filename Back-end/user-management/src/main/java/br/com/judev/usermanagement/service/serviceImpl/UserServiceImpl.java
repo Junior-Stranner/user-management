@@ -174,9 +174,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponseDto getUserById(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(
-                () -> new EntityNotFoundException("User not found with id: " + userId));
+    public UserResponseDto getUserByCpfOrCnpj(String cpfCnpj) {
+        User user = userRepository.findByCpfCnpj(cpfCnpj).orElseThrow(
+                () -> new EntityNotFoundException("User not found with Cpf or Cnpj: " + cpfCnpj));
         return UserMapper.ToDto(user);
     }
 }

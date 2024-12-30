@@ -21,6 +21,6 @@ public interface UserService {
     public UserResponseDto update(Long userId, UserRequestDto userDto);
     public UserChangePasswordDto updatePassword(Long userId, String currentPassword, String newPassword, String confirmPassword);
     public void delete(Long userId);
-    public UserResponseDto getUserById(Long userId);
+    public UserResponseDto getUserByCpfOrCnpj(String cpfCnpj);
 
 }

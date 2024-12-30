@@ -1,10 +1,7 @@
 package br.com.judev.usermanagement.web.exception;
 
-import br.com.judev.usermanagement.exception.EmailUniqueViolationException;
-import br.com.judev.usermanagement.exception.EntityAlreadyExists;
-import br.com.judev.usermanagement.exception.EntityNotFoundException;
+import br.com.judev.usermanagement.exception.*;
 
-import br.com.judev.usermanagement.exception.NameNotChangeException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -23,6 +20,15 @@ public class ApiExceptionHandler {
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ErrorMessage> entityNotFoundException(EntityNotFoundException ex, HttpServletRequest request) {
+        log.error("Api Error - ", ex);
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new ErrorMessage(request, HttpStatus.NOT_FOUND, ex.getMessage()));
+    }
+
+    @ExceptionHandler(UserEmailNotFoundException.class)
+    public ResponseEntity<ErrorMessage> userEmailNotFoundException(UserEmailNotFoundException ex, HttpServletRequest request) {
         log.error("Api Error - ", ex);
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)

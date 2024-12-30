@@ -55,19 +55,25 @@ public class AuthController {
     }
 
 
-@Operation(summary = "Login a  user", description ="Feature to login user",
+    @Operation(
+            summary = "Log in a user",
+            description = "Authenticate a user by email and password. Returns a token upon successful authentication.",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "The login credentials (email and password) of the user.",
+                    required = true,
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = LoginRequestDto.class))),
             responses = {
-                    @ApiResponse(responseCode = "201", description = "User logged in successfully\n",
-                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = RegisterUserRequestDto.class))),
-                    @ApiResponse(responseCode = "409", description = "User e-mail already exists on system",
+                    @ApiResponse(responseCode = "200", description = "User authenticated successfully.",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = LoginResponseDto.class))),
+                    @ApiResponse(responseCode = "401", description = "Invalid credentials. Authentication failed.",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
-                    @ApiResponse(responseCode = "422", description = "Resource not processed due to invalid input data",
+                    @ApiResponse(responseCode = "422", description = "Unprocessable Entity. Invalid input data.",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
-            })
+            }
+    )
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDto> login(@RequestBody @Valid LoginRequestDto loginDto) {
         LoginResponseDto response = userService.login(loginDto);
-
        return new ResponseEntity<>(response, HttpStatus.OK);
    }
 }
