@@ -22,8 +22,10 @@ import br.com.judev.usermanagement.web.validators.UserValidator;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -79,7 +81,7 @@ public class UserServiceImpl implements UserService {
         User savedUser = userRepository.save(newUser);
 
          // Gera um token JWT para o novo usuário registrado
-        String token = this.tokenService.generateToken(newUser);
+        String token = this.tokenService.generateToken(String.valueOf(newUser));
 
         // Envia email de boas-vindas
     //    emailService.sendWelcomeMessageToNewUser(savedUser.getEmail(), savedUser.getName());
@@ -95,27 +97,29 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("Either email or cpfCnpj must be provided.");
         }
 
-        if (loginDto.getEmail() != null && !loginDto.getEmail().isBlank()) {
-             userRepository.findByEmail(loginDto.getEmail())
-                    .orElseThrow(() -> new EntityNotFoundException("User with email " + loginDto.getEmail() + " not found."));
-        } else {
-             userRepository.findByCpfCnpj(loginDto.getCpfCnpj())
-                    .orElseThrow(() -> new EntityNotFoundException("User with cpfCnpj " + loginDto.getCpfCnpj() + " not found."));
+        User user = userRepository.findByEmailOrCpfCnpj(loginDto.getEmail(), loginDto.getCpfCnpj())
+                .orElseThrow(() -> new EntityNotFoundException("User with provided email or cpfCnpj not found."));
+
+        if (!passwordEncoder.matches(loginDto.getPassword(), user.getPassword())) {
+            throw new BadCredentialsException("Invalid password.");
         }
 
-        // Cria o token de autenticação
         UsernamePasswordAuthenticationToken authToken =
-                new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword());
+                new UsernamePasswordAuthenticationToken(user.getEmail(), loginDto.getPassword());
 
-        // Autentica o usuário e verifica as credenciais
         Authentication authentication = authenticationManager.authenticate(authToken);
+     //   String token = tokenService.generateToken((user) authentication.getPrincipal());
 
-        // Gera o token JWT para o usuário autenticado
-        String token = tokenService.generateToken((User) authentication.getPrincipal());
+
+        // Gera o token JWT para o usuário autenticado, agora acessando `UserDetails`
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        System.out.println("Principal retornado: " + authentication.getPrincipal());
+
+        // Gera o token JWT
+        String token = tokenService.generateToken(userDetails.getUsername());
 
         return new LoginResponseDto(token);
     }
-
 
     @Override
     public UserResponseDto update(Long userId, UserRequestDto userDto) {

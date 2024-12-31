@@ -26,8 +26,8 @@ public class TokenService {
     private static final int TEMPORARY_TOKEN_MINUTES = 15;
 
     // Método para gerar token padrão
-    public String generateToken(User user) {
-        return generateToken(user.getEmail(), DEFAULT_EXPIRATION_HOURS);
+    public String generateToken(String user) {
+        return generateToken(user, DEFAULT_EXPIRATION_HOURS);
     }
 
     // Método para gerar token temporário (ex.: recuperação de senha)

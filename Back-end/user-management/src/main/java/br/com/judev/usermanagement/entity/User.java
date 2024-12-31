@@ -1,20 +1,22 @@
 package br.com.judev.usermanagement.entity;
 
+import br.com.judev.usermanagement.entity.UserRole;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 
 @Entity
-@Table(name ="tb_user")
+@Table(name = "tb_user")
 @Getter
 @Setter
-@EqualsAndHashCode(of ="id")
+@EqualsAndHashCode(of = "id")
 public class User implements UserDetails {
 
     @Id
@@ -36,37 +38,15 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
-    public User(String name, String cpfCnpj, String password, String email) {
+    public User(String name, String cpfCnpj, String password, String email, UserRole role) {
         this.name = name;
         this.cpfCnpj = cpfCnpj;
         this.password = password;
         this.email = email;
-    }
-
-    public User() {
-
-    }
-
-    public void setRole(UserRole role) {
         this.role = role;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        User other = (User) obj;
-        return Objects.equals(id, other.id);
-    }
+    public User() {}
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -79,12 +59,12 @@ public class User implements UserDetails {
 
     @Override
     public String getPassword() {
-        return this.password; // Corrigido: agora retorna o valor correto.
+        return this.password;
     }
 
     @Override
     public String getUsername() {
-        return this.email; // Corrigido: agora retorna o email como nome de usuário.
+        return this.email;
     }
 
     @Override
